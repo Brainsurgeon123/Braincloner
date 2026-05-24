@@ -277,14 +277,34 @@ async function loadApprovals() {
   const r = await fetch(`${SUPA}/rest/v1/pending_approvals?user_id=eq.${USER}&order=created_at.desc`, { headers });
   const data = await r.json();
   const pending = data.filter(a => a.status === 'pending');
-  const approved = data.filter(a => a.status === 'approved');
+  const approved = data.filter(a => a.status === 'approved' || a.status === 'sent');
   const rejected = data.filter(a => a.status === 'rejected');
   document.getElementById('cnt-p').textContent = pending.length;
   document.getElementById('cnt-a').textContent = approved.length;
   document.getElementById('cnt-r').textContent = rejected.length;
   const list = document.getElementById('approvals-list');
-  if (!pending.length) { list.innerHTML = '<div class="empty">Inga väntande svar just nu</div>'; return; }
-  list.innerHTML = pending.map(a => {
+  const approvedSent = data.filter(a => a.status === 'approved' || a.status === 'sent');
+  const approvedHtml = approvedSent.length ? `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:600;color:#a78bfa;margin-bottom:10px;">Godkända & skickade</div>
+      ${approvedSent.map(a => {
+        const finalResponse = a.user_modification || a.proposed_action?.response || '';
+        const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
+        const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
+        const date = new Date(a.created_at).toLocaleString('sv-SE');
+        const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
+        return `<div class="card">
+          <div class="card-header">
+            <div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div>
+            <span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${a.status === 'sent' ? 'Skickat' : 'Godkänt'}</span>
+          </div>
+          <div class="response-preview">${finalResponse}</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  if (!pending.length) { list.innerHTML = approvedHtml + '<div class="empty">Inga väntande svar just nu</div>'; return; }
+  list.innerHTML = approvedHtml + pending.map(a => {
     const proposed = a.proposed_action?.response || '';
     const original = a.proposed_action?.original_message || '';
     const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
