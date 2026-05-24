@@ -279,7 +279,7 @@ let approvalsData = [];
 function setFilter(filter) {
   currentFilter = filter;
   document.querySelectorAll('.stat-mini').forEach(el => el.style.borderColor = '');
-  const colors = { pending: '#fbbf24', approved: '#a78bfa', rejected: '#f87171' };
+  const colors = { pending: '#93c5fd', approved: '#4ade80', rejected: '#f87171' };
   document.getElementById('filter-' + filter).style.border = `1px solid ${colors[filter]}`;
   renderApprovals();
 }
