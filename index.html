@@ -106,6 +106,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
     <button class="nav-btn" onclick="showPage('approvals')">Godkännanden</button>
     <button class="nav-btn" onclick="showPage('memories')">Minnesträning</button>
     <button class="nav-btn" onclick="showPage('relationships')">Relationer</button>
+    <button class="nav-btn" onclick="showPage('history')">Historik</button>
   </div>
 </nav>
 
@@ -192,7 +193,23 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   </div>
 </div>
 
-<!-- RELATIONSHIPS -->
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Historik</div>
+      <div class="page-sub">Alla godkända och skickade svar</div>
+    </div>
+    <button class="btn btn-refresh" onclick="loadHistory()">↻ Uppdatera</button>
+  </div>
+  <div class="stats-mini">
+    <div class="stat-mini"><div class="n" id="hist-approved">-</div><div class="l">Godkända</div></div>
+    <div class="stat-mini"><div class="n" id="hist-sent">-</div><div class="l">Skickade</div></div>
+    <div class="stat-mini"><div class="n" id="hist-rejected">-</div><div class="l">Avvisade</div></div>
+  </div>
+  <div id="history-list"></div>
+</div>
+
 <div class="page" id="page-relationships">
   <div class="page-header">
     <div>
@@ -243,7 +260,7 @@ function showPage(p) {
   event.target.classList.add('active');
   if (p === 'approvals') loadApprovals();
   if (p === 'relationships') loadRelationships();
-  if (p === 'landing') loadStats();
+  if (p === 'history') loadHistory();
 }
 
 async function loadStats() {
@@ -405,7 +422,41 @@ async function addRelationship() {
   loadRelationships();
 }
 
-initCategories();
+async function loadHistory() {
+  const r = await fetch(`${SUPA}/rest/v1/pending_approvals?user_id=eq.${USER}&status=in.(approved,sent,rejected)&order=created_at.desc`, { headers });
+  const data = await r.json();
+  const approved = data.filter(a => a.status === 'approved');
+  const sent = data.filter(a => a.status === 'sent');
+  const rejected = data.filter(a => a.status === 'rejected');
+  document.getElementById('hist-approved').textContent = approved.length;
+  document.getElementById('hist-sent').textContent = sent.length;
+  document.getElementById('hist-rejected').textContent = rejected.length;
+
+  const list = document.getElementById('history-list');
+  const all = [...approved, ...sent].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  if (!all.length) { list.innerHTML = '<div class="empty">Inga godkända svar ännu</div>'; return; }
+  list.innerHTML = all.map(a => {
+    const proposed = a.proposed_action?.response || '';
+    const finalResponse = a.user_modification || proposed;
+    const original = a.proposed_action?.original_message || '';
+    const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
+    const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
+    const date = new Date(a.created_at).toLocaleString('sv-SE');
+    const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
+    const statusText = a.status === 'sent' ? 'Skickat' : 'Godkänt';
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div>
+        <span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${statusText}</span>
+      </div>
+      <div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div>
+      <div class="response-label">Skickat svar</div>
+      <div class="response-preview">${finalResponse}</div>
+    </div>`;
+  }).join('');
+}
+
+
 loadStats();
 </script>
 </body>
