@@ -130,11 +130,19 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
         <button class="nav-btn" onclick="showPage('memories', this)">Minnesträning</button>
         <button class="nav-btn" onclick="showPage('relationships', this)">Relationer</button>
       </div>
-      <div class="user-pill">
-        <div class="user-avatar" id="user-initials">?</div>
-        <span id="user-name">Laddar...</span>
+      <div id="nav-logged-out">
+        <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
+          Logga in
+        </button>
       </div>
-      <button class="logout-btn" onclick="logout()">Logga ut</button>
+      <div id="nav-logged-in" style="display:none;align-items:center;gap:8px;">
+        <div class="user-pill">
+          <div class="user-avatar" id="user-initials">?</div>
+          <span id="user-name"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logga ut</button>
+      </div>
     </div>
   </nav>
 
