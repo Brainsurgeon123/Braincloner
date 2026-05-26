@@ -270,8 +270,13 @@ function showApp() {
   loadStats();
 }
 
-function getHeaders() {
-  return { apikey: SUPA_KEY, Authorization: `Bearer ${sb.auth.session?.access_token || SUPA_KEY}`, "Content-Type": "application/json" };
+async function getToken() {
+  const { data: { session } } = await sb.auth.getSession();
+  return session?.access_token || SUPA_KEY;
+}
+
+function getHeaders(token) {
+  return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" };
 }
 
 function getUserId() {
@@ -299,7 +304,8 @@ async function loadStats() {
     return;
   }
   const uid = getUserId();
-  const h = getHeaders();
+  const token = await getToken();
+  const h = getHeaders(token);
   const [r1, r2, r3] = await Promise.all([
     fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.pending`, { headers: h }),
     fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${uid}`, { headers: h }),
@@ -328,7 +334,8 @@ async function loadApprovals() {
     return;
   }
   const uid = getUserId();
-  const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders() });
+  const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders(token) });
   approvalsData = await r.json();
   const pending = approvalsData.filter(a => a.status === 'pending');
   const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent');
@@ -380,12 +387,14 @@ function renderApprovals() {
 
 async function approve(id) {
   const edited = document.getElementById(`edit-${id}`).value;
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
+  const token1 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token1),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
   loadApprovals();
 }
 
 async function reject(id) {
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
+  const token2 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token2),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
   loadApprovals();
 }
 
@@ -429,7 +438,8 @@ function copySQL() { navigator.clipboard.writeText(document.getElementById('sql-
 
 async function loadRelationships() {
   const uid = getUserId();
-  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders() });
+  const token3 = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token3) });
   const data = await r.json();
   const list = document.getElementById('rel-list');
   if (!data.length) { list.innerHTML='<div class="empty">Inga kontakter ännu</div>'; return; }
@@ -449,7 +459,8 @@ async function addRelationship() {
   const context = document.getElementById('rel-context').value.trim();
   if (!name||!email) return alert('Namn och email krävs');
   const uid = getUserId();
-  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+  const token4 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token4),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
   ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
   loadRelationships();
 }
