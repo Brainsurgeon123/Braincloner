@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrainCloner</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #080808; color: #e0e0e0; min-height: 100vh; }
+
+/* Login */
+.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-box { background: #111; border: 0.5px solid #222; border-radius: 16px; padding: 48px; text-align: center; width: 100%; max-width: 400px; }
+.login-logo { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.login-logo span { color: #a78bfa; }
+.login-sub { font-size: 14px; color: #666; margin-bottom: 32px; }
+.google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 14px; background: #fff; color: #333; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+.google-btn:hover { opacity: 0.9; }
+.google-btn img { width: 20px; height: 20px; }
+.login-footer { font-size: 12px; color: #444; margin-top: 24px; line-height: 1.6; }
+
+/* Nav */
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 0.5px solid #222; background: #080808; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+.logo span { color: #a78bfa; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; background: transparent; color: #888; transition: all 0.15s; }
+.nav-btn:hover { background: #1a1a1a; color: #e0e0e0; }
+.nav-btn.active { background: #1a1a1a; color: #fff; }
+.user-pill { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #1a1a1a; border-radius: 20px; font-size: 12px; color: #888; }
+.user-avatar { width: 24px; height: 24px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #a78bfa; }
+.logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
+.logout-btn:hover { border-color: #f87171; color: #f87171; }
+
+/* Pages */
+.page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
+.page.active { display: block; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.page-title { font-size: 22px; font-weight: 600; color: #fff; }
+.page-sub { font-size: 13px; color: #666; margin-top: 4px; }
+
+/* Hero */
+.hero { text-align: center; padding: 80px 0 60px; }
+.hero h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; color: #fff; margin-bottom: 16px; line-height: 1.1; }
+.hero h1 span { color: #a78bfa; }
+.hero p { font-size: 18px; color: #888; max-width: 500px; margin: 0 auto 32px; line-height: 1.6; }
+.hero-btn { padding: 14px 32px; background: #a78bfa; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 64px; }
+.feature { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 24px; }
+.feature-icon { font-size: 28px; margin-bottom: 12px; }
+.feature h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+.feature p { font-size: 13px; color: #666; line-height: 1.6; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+.stat-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 20px; text-align: center; }
+.stat-card .num { font-size: 32px; font-weight: 700; color: #a78bfa; }
+.stat-card .lbl { font-size: 12px; color: #666; margin-top: 4px; }
+
+/* Stats mini */
+.stats-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-mini { background: #111; border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: border-color 0.15s; }
+.stat-mini .n { font-size: 24px; font-weight: 600; }
+.stat-mini .l { font-size: 11px; color: #666; margin-top: 2px; }
+
+/* Cards */
+.card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.sender { font-size: 13px; color: #a78bfa; }
+.date-txt { font-size: 11px; color: #444; margin-top: 2px; }
+.badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+.original-msg { font-size: 12px; color: #555; font-style: italic; border-left: 2px solid #222; padding-left: 10px; margin-bottom: 12px; line-height: 1.5; }
+.response-label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.response-preview { background: #0d0d0d; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; margin-bottom: 10px; white-space: pre-wrap; color: #ccc; }
+textarea { width: 100%; background: #0d0d0d; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 10px; font-size: 13px; color: #e0e0e0; min-height: 80px; resize: vertical; font-family: inherit; margin-bottom: 10px; }
+textarea:focus { outline: none; border-color: #a78bfa; }
+.btn-row { display: flex; gap: 8px; }
+.btn { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.8; }
+.btn-approve { background: #0a2a0a; color: #4ade80; border: 0.5px solid #1a4a1a; }
+.btn-reject { background: #2a0a0a; color: #f87171; border: 0.5px solid #4a1a1a; }
+.btn-refresh { background: #1a1a2a; color: #93c5fd; border: 0.5px solid #2a3a5a; padding: 10px 20px; flex: 0; }
+.empty { text-align: center; padding: 60px; color: #444; font-size: 14px; }
+
+/* Memory */
+.cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.cat-btn { padding: 6px 14px; border-radius: 20px; border: 0.5px solid #2a2a2a; background: #111; color: #666; cursor: pointer; font-size: 12px; transition: all 0.15s; }
+.cat-btn.active { background: #2a1f4a; color: #a78bfa; border-color: #5a3fa0; }
+.input-group { margin-bottom: 16px; }
+.input-label { font-size: 12px; color: #666; margin-bottom: 6px; font-weight: 500; }
+input[type=text] { width: 100%; background: #0d0d0d; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e0e0e0; font-family: inherit; }
+input[type=text]:focus { outline: none; border-color: #a78bfa; }
+.mem-list { margin-top: 20px; }
+.mem-item { background: #111; border: 0.5px solid #222; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.mem-content { flex: 1; }
+.mem-summary { font-size: 12px; font-weight: 600; color: #a78bfa; margin-bottom: 4px; }
+.mem-text { font-size: 12px; color: #666; line-height: 1.5; }
+.mem-cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a1a1a; color: #555; white-space: nowrap; }
+.del-btn { background: none; border: none; cursor: pointer; color: #333; font-size: 18px; line-height: 1; padding: 0; }
+.del-btn:hover { color: #f87171; }
+.sql-section { margin-top: 24px; background: #0d0d0d; border: 0.5px solid #222; border-radius: 10px; padding: 16px; }
+.sql-label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.sql-code { font-family: monospace; font-size: 11px; color: #666; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; }
+.copy-btn { margin-top: 10px; width: 100%; padding: 10px; background: #1a1a2a; color: #93c5fd; border: 0.5px solid #2a3a5a; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+/* Relations */
+.rel-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.rel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #a78bfa; flex-shrink: 0; }
+.rel-name { font-size: 15px; font-weight: 600; color: #fff; }
+.rel-email { font-size: 12px; color: #555; }
+.trust-bar { height: 4px; background: #1a1a1a; border-radius: 2px; margin: 8px 0; overflow: hidden; }
+.trust-fill { height: 100%; border-radius: 2px; background: #a78bfa; }
+.rel-detail { font-size: 12px; color: #555; line-height: 1.6; }
+.add-rel-form { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.add-btn { margin-top: 12px; width: 100%; padding: 12px; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="logo">Brain<span>Cloner</span></div>
+    <div class="nav-right">
+      <div class="nav-links" id="nav-links">
+        <button class="nav-btn active" onclick="showPage('landing', this)">Hem</button>
+        <button class="nav-btn" onclick="showPage('approvals', this)">Godkännanden</button>
+        <button class="nav-btn" onclick="showPage('memories', this)">Minnesträning</button>
+        <button class="nav-btn" onclick="showPage('relationships', this)">Relationer</button>
+      </div>
+      <div id="nav-logged-out">
+        <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
+          Logga in
+        </button>
+      </div>
+      <div id="nav-logged-in" style="display:none;align-items:center;gap:8px;">
+        <div class="user-pill">
+          <div class="user-avatar" id="user-initials">?</div>
+          <span id="user-name"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logga ut</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- LANDING -->
+  <div class="page active" id="page-landing">
+    <div class="hero">
+      <h1>Klona din <span>hjärna</span><br>slipp svara på mail</h1>
+      <p>AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
+      <button class="hero-btn" onclick="showPage('approvals', document.querySelectorAll('.nav-btn')[1])">Öppna dashboard</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl">Väntande svar</div></div>
+      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl">Minnen inlärda</div></div>
+      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl">Skickade svar</div></div>
+    </div>
+    <div class="features">
+      <div class="feature"><div class="feature-icon">🧠</div><h3>Levande minne</h3><p>Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
+      <div class="feature"><div class="feature-icon">🔒</div><h3>Du har kontroll</h3><p>Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
+      <div class="feature"><div class="feature-icon">⚡</div><h3>Automatiserat</h3><p>Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
+    </div>
+  </div>
+
+  <!-- APPROVALS -->
+  <div class="page" id="page-approvals">
+    <div class="page-header">
+      <div><div class="page-title">Godkännanden</div><div class="page-sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
+      <button class="btn btn-refresh" onclick="loadApprovals()">↻ Uppdatera</button>
+    </div>
+    <div class="stats-mini">
+      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l">Väntande</div></div>
+      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l">Godkända</div></div>
+      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l">Avvisade</div></div>
+    </div>
+    <div id="approvals-list"></div>
+  </div>
+
+  <!-- MEMORIES -->
+  <div class="page" id="page-memories">
+    <div class="page-header"><div><div class="page-title">Minnesträning</div><div class="page-sub">Mata in information för att förbättra klonen</div></div></div>
+    <div class="cat-grid" id="cat-grid"></div>
+    <div class="input-group"><div class="input-label">Innehåll</div><textarea id="mem-content" rows="3" placeholder="Beskriv något om personens värderingar, vanor, kommunikationsstil..."></textarea></div>
+    <div class="input-group"><div class="input-label">Kort sammanfattning</div><input type="text" id="mem-summary" placeholder="En mening som beskriver minnet" /></div>
+    <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()">+ Lägg till minne</button>
+    <div class="mem-list" id="mem-list"></div>
+    <div class="sql-section" id="sql-section" style="display:none;">
+      <div class="sql-label">SQL – kör i Supabase SQL Editor</div>
+      <div class="sql-code" id="sql-code"></div>
+      <button class="copy-btn" onclick="copySQL()">Kopiera SQL</button>
+    </div>
+  </div>
+
+  <!-- RELATIONSHIPS -->
+  <div class="page" id="page-relationships">
+    <div class="page-header"><div><div class="page-title">Relationer</div><div class="page-sub">Hantera kontakter och trust-nivåer</div></div></div>
+    <div class="add-rel-form">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;">Lägg till kontakt</div>
+      <div class="form-grid">
+        <div class="input-group"><div class="input-label">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson" /></div>
+        <div class="input-group"><div class="input-label">Email</div><input type="text" id="rel-email" placeholder="anna@example.com" /></div>
+        <div class="input-group"><div class="input-label">Kommunikationsstil</div><input type="text" id="rel-style" placeholder="Formell, kort, direkt..." /></div>
+        <div class="input-group"><div class="input-label">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5" /></div>
+      </div>
+      <div class="input-group"><div class="input-label">Viktig kontext</div><input type="text" id="rel-context" placeholder="Gammal vän, affärspartner, klient..." /></div>
+      <button class="add-btn" onclick="addRelationship()">Lägg till kontakt</button>
+    </div>
+    <div id="rel-list"></div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = "https://kpmhgkznqntkyedpdevs.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwbWhna3pucW50a3llZHBkZXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzU2MDMsImV4cCI6MjA5MzUxMTYwM30.tvuv0lPiIuS6wtaq8f7DDb4BS8moJOCsIYWp1r0HFF0";
+
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let currentFilter = 'pending';
+let approvalsData = [];
+
+// AUTH
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    showApp();
+  } else {
+    showLogin();
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) { currentUser = session.user; showApp(); }
+    else { showLogin(); }
+  });
+}
+
+async function loginWithGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  showLogin();
+}
+
+function showLogin() {
+  currentUser = null;
+  const loggedOut = document.getElementById('nav-logged-out');
+  const loggedIn = document.getElementById('nav-logged-in');
+  if (loggedOut) loggedOut.style.display = 'block';
+  if (loggedIn) loggedIn.style.display = 'none';
+  ['hero-pending','hero-memories','hero-sent','cnt-p','cnt-a','cnt-r'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '-';
+  });
+}
+
+function showApp() {
+  document.getElementById('nav-logged-out').style.display = 'none';
+  document.getElementById('nav-logged-in').style.display = 'flex';
+  const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'Användare';
+  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = name.split(' ')[0];
+  document.getElementById('user-initials').textContent = initials;
+  loadStats();
+}
+
+async function getToken() {
+  const { data: { session } } = await sb.auth.getSession();
+  return session?.access_token || SUPA_KEY;
+}
+
+function getHeaders(token) {
+  return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" };
+}
+
+function getUserId() {
+  return currentUser?.id || null;
+}
+
+function showPage(p, btn) {
+  const protectedPages = ['approvals', 'memories', 'relationships'];
+  if (protectedPages.includes(p) && !currentUser) {
+    alert('Du måste logga in för att se den här sidan.');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (p === 'approvals') loadApprovals();
+  if (p === 'relationships') loadRelationships();
+  if (p === 'landing') loadStats();
+}
+
+async function loadStats() {
+  if (!currentUser) {
+    ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-');
+    return;
+  }
+  const uid = getUserId();
+  const token = await getToken();
+  const h = getHeaders(token);
+  const [r1, r2, r3] = await Promise.all([
+    fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.pending`, { headers: h }),
+    fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${uid}`, { headers: h }),
+    fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.sent`, { headers: h })
+  ]);
+  const [p, m, s] = await Promise.all([r1.json(), r2.json(), r3.json()]);
+  document.getElementById('hero-pending').textContent = Array.isArray(p) ? p.length : '-';
+  document.getElementById('hero-memories').textContent = Array.isArray(m) ? m.length : '-';
+  document.getElementById('hero-sent').textContent = Array.isArray(s) ? s.length : '-';
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  const colors = { pending: '#93c5fd', approved: '#4ade80', rejected: '#f87171' };
+  document.querySelectorAll('.stat-mini').forEach(el => el.style.border = '1px solid transparent');
+  document.getElementById('filter-' + filter).style.border = `1px solid ${colors[filter]}`;
+  renderApprovals();
+}
+
+async function loadApprovals() {
+  if (!currentUser) {
+    document.getElementById('cnt-p').textContent = '-';
+    document.getElementById('cnt-a').textContent = '-';
+    document.getElementById('cnt-r').textContent = '-';
+    document.getElementById('approvals-list').innerHTML = '<div class="empty">Logga in för att se dina godkännanden</div>';
+    return;
+  }
+  const uid = getUserId();
+  const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders(token) });
+  approvalsData = await r.json();
+  const pending = approvalsData.filter(a => a.status === 'pending');
+  const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent');
+  const rejected = approvalsData.filter(a => a.status === 'rejected');
+  document.getElementById('cnt-p').textContent = pending.length;
+  document.getElementById('cnt-a').textContent = approved.length;
+  document.getElementById('cnt-r').textContent = rejected.length;
+  renderApprovals();
+}
+
+function renderApprovals() {
+  const list = document.getElementById('approvals-list');
+  if (currentFilter === 'approved') {
+    const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent')
+      .sort((a,b) => { if (a.status==='approved'&&b.status!=='approved') return -1; if (b.status==='approved'&&a.status!=='approved') return 1; return new Date(b.created_at)-new Date(a.created_at); });
+    if (!approved.length) { list.innerHTML = '<div class="empty">Inga godkända svar ännu</div>'; return; }
+    list.innerHTML = approved.map(a => {
+      const finalResponse = a.user_modification || a.proposed_action?.response || '';
+      const original = a.proposed_action?.original_message || '';
+      const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
+      const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
+      const date = new Date(a.created_at).toLocaleString('sv-SE');
+      const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
+      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${a.status==='sent'?'Skickat':'Godkänt – skickas snart'}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">Skickat svar</div><div class="response-preview">${finalResponse}</div></div>`;
+    }).join(''); return;
+  }
+  if (currentFilter === 'rejected') {
+    const rejected = approvalsData.filter(a => a.status === 'rejected');
+    if (!rejected.length) { list.innerHTML = '<div class="empty">Inga avvisade svar</div>'; return; }
+    list.innerHTML = rejected.map(a => {
+      const proposed = a.proposed_action?.response || '';
+      const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
+      const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
+      const date = new Date(a.created_at).toLocaleString('sv-SE');
+      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">Avvisad</span></div><div class="response-preview">${proposed}</div></div>`;
+    }).join(''); return;
+  }
+  const pending = approvalsData.filter(a => a.status === 'pending');
+  if (!pending.length) { list.innerHTML = '<div class="empty">Inga väntande svar just nu</div>'; return; }
+  list.innerHTML = pending.map(a => {
+    const proposed = a.proposed_action?.response || '';
+    const original = a.proposed_action?.original_message || '';
+    const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
+    const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
+    const date = new Date(a.created_at).toLocaleString('sv-SE');
+    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge badge-pending" style="background:#2a2000;color:#fbbf24;">Väntar</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">Föreslagen svar</div><div class="response-preview">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">✓ Godkänn och skicka</button><button class="btn btn-reject" onclick="reject('${a.id}')">✗ Avvisa</button></div></div>`;
+  }).join('');
+}
+
+async function approve(id) {
+  const edited = document.getElementById(`edit-${id}`).value;
+  const token1 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token1),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
+  loadApprovals();
+}
+
+async function reject(id) {
+  const token2 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token2),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
+  loadApprovals();
+}
+
+const CATS = ['value','personality','preference','belief','habit','goal','communication','knowledge','experience'];
+const CAT_LABELS = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
+let currentCat = 'value';
+let memories = [];
+
+function initCategories() {
+  document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${CAT_LABELS[c]}</button>`).join('');
+}
+
+function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+
+function addMemory() {
+  const content = document.getElementById('mem-content').value.trim();
+  const summary = document.getElementById('mem-summary').value.trim();
+  if (!content) return;
+  memories.push({content, summary: summary||content.slice(0,60), category: currentCat});
+  document.getElementById('mem-content').value='';
+  document.getElementById('mem-summary').value='';
+  renderMemories(); generateSQL();
+}
+
+function renderMemories() {
+  document.getElementById('mem-list').innerHTML = memories.map((m,i) => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary}</div><div class="mem-text">${m.content}</div></div><span class="mem-cat-badge">${CAT_LABELS[m.category]||m.category}</span><button class="del-btn" onclick="deleteMem(${i})">×</button></div>`).join('');
+}
+
+function deleteMem(i) { memories.splice(i,1); renderMemories(); generateSQL(); }
+
+function generateSQL() {
+  const sec = document.getElementById('sql-section');
+  if (!memories.length) { sec.style.display='none'; return; }
+  sec.style.display='block';
+  const uid = getUserId();
+  const rows = memories.map(m=>`  ('${uid}', '${m.content.replace(/'/g,"''")}', '${m.summary.replace(/'/g,"''")}', '${m.category}', 'full', 1.0, 'manual_training', 1.0)`).join(',\n');
+  document.getElementById('sql-code').textContent = `INSERT INTO memories (user_id, content, summary, category, tier, confidence, source, activation_weight)\nVALUES\n${rows};`;
+}
+
+function copySQL() { navigator.clipboard.writeText(document.getElementById('sql-code').textContent); event.target.textContent='Kopierat!'; setTimeout(()=>event.target.textContent='Kopiera SQL',2000); }
+
+async function loadRelationships() {
+  const uid = getUserId();
+  const token3 = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token3) });
+  const data = await r.json();
+  const list = document.getElementById('rel-list');
+  if (!data.length) { list.innerHTML='<div class="empty">Inga kontakter ännu</div>'; return; }
+  list.innerHTML = data.map(rel => {
+    const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const trust = rel.trust_level||0;
+    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString('sv-SE') : 'Aldrig';
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'Okänd'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`Stil: ${rel.communication_style}<br>`:''} ${rel.important_context?`Kontext: ${rel.important_context}<br>`:''} Senast aktiv: ${last}</div></div>`;
+  }).join('');
+}
+
+async function addRelationship() {
+  const name = document.getElementById('rel-name').value.trim();
+  const email = document.getElementById('rel-email').value.trim();
+  const style = document.getElementById('rel-style').value.trim();
+  const trust = parseInt(document.getElementById('rel-trust').value)||5;
+  const context = document.getElementById('rel-context').value.trim();
+  if (!name||!email) return alert('Namn och email krävs');
+  const uid = getUserId();
+  const token4 = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token4),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+  ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
+  loadRelationships();
+}
+
+initCategories();
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
