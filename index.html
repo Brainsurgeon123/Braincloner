@@ -275,7 +275,7 @@ function getHeaders() {
 }
 
 function getUserId() {
-  return currentUser?.id || '0649094c-c3ef-4baa-b12a-cc3426b0c93a';
+  return currentUser?.id || null;
 }
 
 function showPage(p, btn) {
@@ -320,6 +320,13 @@ function setFilter(filter) {
 }
 
 async function loadApprovals() {
+  if (!currentUser) {
+    document.getElementById('cnt-p').textContent = '-';
+    document.getElementById('cnt-a').textContent = '-';
+    document.getElementById('cnt-r').textContent = '-';
+    document.getElementById('approvals-list').innerHTML = '<div class="empty">Logga in för att se dina godkännanden</div>';
+    return;
+  }
   const uid = getUserId();
   const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders() });
   approvalsData = await r.json();
