@@ -253,11 +253,14 @@ async function logout() {
 
 function showLogin() {
   currentUser = null;
-  document.getElementById('nav-logged-out').style.display = 'block';
-  document.getElementById('nav-logged-in').style.display = 'none';
-  // Reset all stats to dashes
-  ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-');
-  ['cnt-p','cnt-a','cnt-r'].forEach(id => document.getElementById(id).textContent = '-');
+  const loggedOut = document.getElementById('nav-logged-out');
+  const loggedIn = document.getElementById('nav-logged-in');
+  if (loggedOut) loggedOut.style.display = 'block';
+  if (loggedIn) loggedIn.style.display = 'none';
+  ['hero-pending','hero-memories','hero-sent','cnt-p','cnt-a','cnt-r'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '-';
+  });
 }
 
 function showApp() {
