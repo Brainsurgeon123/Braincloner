@@ -248,7 +248,7 @@ async function loginWithGoogle() {
 
 async function logout() {
   await sb.auth.signOut();
-  showLogin();
+  window.location.reload();
 }
 
 function showLogin() {
