@@ -287,11 +287,6 @@ function getUserId() {
 }
 
 function showPage(p, btn) {
-  const protectedPages = ['approvals', 'memories', 'relationships'];
-  if (protectedPages.includes(p) && !currentUser) {
-    alert('Du måste logga in för att se den här sidan.');
-    return;
-  }
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
