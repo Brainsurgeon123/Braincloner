@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 <title>BrainCloner</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -34,20 +34,6 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
 .logout-btn:hover { border-color: #f87171; color: #f87171; }
 
-  nav { padding: 10px 12px; }
-  .nav-right {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex: 1;
-    min-width: 0;
-  }
-  .nav-right::-webkit-scrollbar { display: none; }
-  .nav-links { flex-wrap: nowrap; }
-  .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
-  #nav-logged-out button, .user-pill, .logout-btn { white-space: nowrap; flex-shrink: 0; }
-}
 /* Pages */
 .page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
 .page.active { display: block; }
@@ -129,6 +115,30 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 .add-rel-form { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .add-btn { margin-top: 12px; width: 100%; padding: 12px; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+/* Mobil */
+@media (max-width: 640px) {
+  nav { padding: 10px 12px; }
+  .nav-right {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    min-width: 0;
+  }
+  .nav-right::-webkit-scrollbar { display: none; }
+  .nav-links { flex-wrap: nowrap; }
+  .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+  #nav-logged-out button, .user-pill, .logout-btn { white-space: nowrap; flex-shrink: 0; }
+  .hero { padding: 24px 16px 32px; }
+  .hero h1 { font-size: 36px; }
+  .hero p { font-size: 15px; }
+  .page { padding: 24px 16px; }
+  .hero-btn { width: 100%; }
+  .features { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
 </style>
 </head>
 <body>
@@ -237,16 +247,10 @@ let currentUser = null;
 let currentFilter = 'pending';
 let approvalsData = [];
 
-// AUTH
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    showApp();
-  } else {
-    showLogin();
-  }
-
+  if (session) { currentUser = session.user; showApp(); }
+  else { showLogin(); }
   sb.auth.onAuthStateChange((event, session) => {
     if (session) { currentUser = session.user; showApp(); }
     else { showLogin(); }
@@ -254,10 +258,7 @@ async function init() {
 }
 
 async function loginWithGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href }
-  });
+  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
 }
 
 async function logout() {
@@ -296,9 +297,7 @@ function getHeaders(token) {
   return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" };
 }
 
-function getUserId() {
-  return currentUser?.id || null;
-}
+function getUserId() { return currentUser?.id || null; }
 
 function showPage(p, btn) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
