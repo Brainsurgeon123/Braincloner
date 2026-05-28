@@ -34,45 +34,19 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
 .logout-btn:hover { border-color: #f87171; color: #f87171; }
 @media (max-width: 640px) {
-  nav {
-    flex-direction: column;
-    padding: 8px 12px;
-    gap: 8px;
-  }
-  .logo { text-align: center; }
+  nav { padding: 10px 12px; }
   .nav-right {
-    width: 100%;
-    flex-direction: column;
-    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    min-width: 0;
   }
-  .nav-links {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    width: 100%;
-    gap: 4px;
-  }
-  .nav-btn {
-    text-align: center;
-    padding: 8px 2px;
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  #nav-logged-out { width: 100%; }
-  #nav-logged-out button { width: 100%; justify-content: center; }
-  .nav-logged-in { width: 100%; justify-content: center; }
-  .hero { padding: 24px 16px 32px; }
-  .hero h1 { font-size: 36px; }
-  .hero p { font-size: 15px; }
-  .page { padding: 24px 16px; }
-  .hero-btn { width: 100%; }
-  .features { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-}
-  #nav-logged-out button, .user-pill, .logout-btn {
-    white-space: nowrap;
-  }
+  .nav-right::-webkit-scrollbar { display: none; }
+  .nav-links { flex-wrap: nowrap; }
+  .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+  #nav-logged-out button, .user-pill, .logout-btn { white-space: nowrap; flex-shrink: 0; }
   .hero { padding: 24px 16px 32px; }
   .hero h1 { font-size: 36px; }
   .hero p { font-size: 15px; }
