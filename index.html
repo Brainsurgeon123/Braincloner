@@ -37,26 +37,35 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
   nav {
     padding: 8px 12px;
     flex-direction: column;
-    align-items: stretch;
     gap: 8px;
   }
   .logo { text-align: center; }
-  .nav-right {
-    width: 100%;
-    overflow: visible;
-    justify-content: space-between;
-  }
+  .nav-right { width: 100%; }
   .nav-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    gap: 4px;
   }
   .nav-btn {
-    flex: 1;
     text-align: center;
-    padding: 8px 4px;
+    padding: 8px 2px;
     font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+  #nav-logged-out button, .user-pill, .logout-btn {
+    white-space: nowrap;
+  }
+  .hero { padding: 24px 16px 32px; }
+  .hero h1 { font-size: 36px; }
+  .hero p { font-size: 15px; }
+  .page { padding: 24px 16px; }
+  .hero-btn { width: 100%; }
+  .features { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
   #nav-logged-out button, .user-pill, .logout-btn {
     white-space: nowrap;
   }
