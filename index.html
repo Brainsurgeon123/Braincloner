@@ -501,14 +501,25 @@ document.addEventListener('DOMContentLoaded', init);
 </body>
 <div class="scroll-hint" id="scroll-hint">↓</div>
 <script>
-  window.addEventListener('scroll', function() {
+  function updateScrollHint() {
     const sh = document.getElementById('scroll-hint');
+    const isLanding = document.getElementById('page-landing').classList.contains('active');
+    if (!isLanding) { sh.style.display = 'none'; return; }
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    if (window.scrollY >= scrollable - 40) {
+    if (scrollable <= 0 || window.scrollY >= scrollable - 40) {
       sh.style.display = 'none';
     } else {
       sh.style.display = 'block';
     }
-  });
+  }
+  window.addEventListener('scroll', updateScrollHint);
+  const origShowPage = showPage;
+  window.showPage = function(p, btn) {
+    origShowPage(p, btn);
+    window.scrollTo(0, 0);
+    setTimeout(updateScrollHint, 50);
+  };
+  setTimeout(updateScrollHint, 100);
+</script>
 </script>
 </html>
