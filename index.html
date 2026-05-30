@@ -9,17 +9,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, sans-serif; background: #080808; color: #e0e0e0; min-height: 100vh; }
 
-/* Login */
-.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-.login-box { background: #111; border: 0.5px solid #222; border-radius: 16px; padding: 48px; text-align: center; width: 100%; max-width: 400px; }
-.login-logo { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.login-logo span { color: #a78bfa; }
-.login-sub { font-size: 14px; color: #666; margin-bottom: 32px; }
-.google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 14px; background: #fff; color: #333; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
-.google-btn:hover { opacity: 0.9; }
-.google-btn img { width: 20px; height: 20px; }
-.login-footer { font-size: 12px; color: #444; margin-top: 24px; line-height: 1.6; }
-
 /* Nav */
 nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 0.5px solid #222; background: #080808; position: sticky; top: 0; z-index: 10; }
 .logo { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
@@ -33,6 +22,8 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #a78bfa; }
 .logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
 .logout-btn:hover { border-color: #f87171; color: #f87171; }
+.gmail-btn { padding: 6px 12px; background: #0a2a0a; border: 0.5px solid #1a4a1a; border-radius: 8px; color: #4ade80; font-size: 12px; cursor: pointer; }
+.gmail-btn.connected { background: #111; color: #666; border-color: #333; }
 
 /* Pages */
 .page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
@@ -116,17 +107,14 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .add-btn { margin-top: 12px; width: 100%; padding: 12px; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
+/* Scroll hint */
+.scroll-hint { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #a78bfa; font-size: 28px; animation: bounce 1.5s infinite; z-index: 100; pointer-events: none; }
+@keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
 /* Mobil */
 @media (max-width: 640px) {
   nav { padding: 10px 12px; }
-  .nav-right {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex: 1;
-    min-width: 0;
-  }
+  .nav-right { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; flex: 1; min-width: 0; }
   .nav-right::-webkit-scrollbar { display: none; }
   .nav-links { flex-wrap: nowrap; }
   .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
@@ -138,31 +126,12 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   .hero-btn { width: 100%; }
   .features { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-}
-.scroll-hint {
-  display: none;
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #a78bfa;
-  font-size: 28px;
-  animation: bounce 1.5s infinite;
-  z-index: 100;
-  pointer-events: none;
-}
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
-}
-@media (max-width: 640px) {
   .scroll-hint { display: block; }
 }
 </style>
 </head>
 <body>
 
-<!-- APP -->
 <div id="app">
   <nav>
     <div class="logo">Brain<span>Cloner</span></div>
@@ -184,6 +153,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
           <div class="user-avatar" id="user-initials">?</div>
           <span id="user-name"></span>
         </div>
+        <button class="gmail-btn" id="gmail-btn" onclick="connectGmail()">📧 Koppla Gmail</button>
         <button class="logout-btn" onclick="logout()">Logga ut</button>
       </div>
     </div>
@@ -255,6 +225,8 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   </div>
 </div>
 
+<div class="scroll-hint" id="scroll-hint">↓</div>
+
 <script>
 const SUPA_URL = "https://kpmhgkznqntkyedpdevs.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwbWhna3pucW50a3llZHBkZXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzU2MDMsImV4cCI6MjA5MzUxMTYwM30.tvuv0lPiIuS6wtaq8f7DDb4BS8moJOCsIYWp1r0HFF0";
@@ -305,6 +277,7 @@ function showApp() {
   document.getElementById('user-name').textContent = name.split(' ')[0];
   document.getElementById('user-initials').textContent = initials;
   loadStats();
+  checkGmailStatus();
 }
 
 async function getToken() {
@@ -326,6 +299,8 @@ function showPage(p, btn) {
   if (p === 'approvals') loadApprovals();
   if (p === 'relationships') loadRelationships();
   if (p === 'landing') loadStats();
+  window.scrollTo(0, 0);
+  setTimeout(updateScrollHint, 50);
 }
 
 async function loadStats() {
@@ -495,31 +470,41 @@ async function addRelationship() {
   loadRelationships();
 }
 
+async function connectGmail() {
+  window.location.href = "https://kpmhgkznqntkyedpdevs.supabase.co/functions/v1/gmail-auth";
+}
+
+async function checkGmailStatus() {
+  if (!currentUser) return;
+  const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${getUserId()}`, { headers: getHeaders(token) });
+  const data = await r.json();
+  const btn = document.getElementById('gmail-btn');
+  if (btn && data.length > 0) {
+    btn.textContent = '✓ Gmail kopplat';
+    btn.classList.add('connected');
+  }
+}
+
+function updateScrollHint() {
+  const sh = document.getElementById('scroll-hint');
+  const isLanding = document.getElementById('page-landing').classList.contains('active');
+  if (!isLanding) { sh.style.display = 'none'; return; }
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  if (scrollable <= 0 || window.scrollY >= scrollable - 40) {
+    sh.style.display = 'none';
+  } else {
+    sh.style.display = 'block';
+  }
+}
+
+window.addEventListener('scroll', updateScrollHint);
+
 initCategories();
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  setTimeout(updateScrollHint, 100);
+});
 </script>
 </body>
-<div class="scroll-hint" id="scroll-hint">↓</div>
-<script>
-  function updateScrollHint() {
-    const sh = document.getElementById('scroll-hint');
-    const isLanding = document.getElementById('page-landing').classList.contains('active');
-    if (!isLanding) { sh.style.display = 'none'; return; }
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    if (scrollable <= 0 || window.scrollY >= scrollable - 40) {
-      sh.style.display = 'none';
-    } else {
-      sh.style.display = 'block';
-    }
-  }
-  window.addEventListener('scroll', updateScrollHint);
-  const origShowPage = showPage;
-  window.showPage = function(p, btn) {
-    origShowPage(p, btn);
-    window.scrollTo(0, 0);
-    setTimeout(updateScrollHint, 50);
-  };
-  setTimeout(updateScrollHint, 100);
-</script>
-</script>
 </html>
