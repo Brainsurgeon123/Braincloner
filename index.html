@@ -22,8 +22,6 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #a78bfa; }
 .logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
 .logout-btn:hover { border-color: #f87171; color: #f87171; }
-.gmail-btn { padding: 6px 12px; background: #0a2a0a; border: 0.5px solid #1a4a1a; border-radius: 8px; color: #4ade80; font-size: 12px; cursor: pointer; }
-.gmail-btn.connected { background: #111; color: #666; border-color: #333; }
 
 /* Pages */
 .page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
@@ -153,7 +151,6 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
           <div class="user-avatar" id="user-initials">?</div>
           <span id="user-name"></span>
         </div>
-        <button class="gmail-btn" id="gmail-btn" onclick="connectGmail()">📧 Koppla Gmail</button>
         <button class="logout-btn" onclick="logout()">Logga ut</button>
       </div>
     </div>
@@ -249,7 +246,14 @@ async function init() {
 }
 
 async function loginWithGoogle() {
-  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.href,
+      scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
+  });
 }
 
 async function logout() {
@@ -277,7 +281,25 @@ function showApp() {
   document.getElementById('user-name').textContent = name.split(' ')[0];
   document.getElementById('user-initials').textContent = initials;
   loadStats();
-  checkGmailStatus();
+  saveGmailToken();
+}
+
+async function saveGmailToken() {
+  if (!currentUser) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session?.provider_token) return;
+  const token = session.access_token;
+  await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
+    method: 'POST',
+    headers: { ...getHeaders(token), Prefer: 'resolution=merge-duplicates' },
+    body: JSON.stringify({
+      user_id: currentUser.id,
+      access_token: session.provider_token,
+      refresh_token: session.provider_refresh_token || null,
+      gmail_email: currentUser.email,
+      updated_at: new Date().toISOString()
+    })
+  });
 }
 
 async function getToken() {
@@ -468,22 +490,6 @@ async function addRelationship() {
   await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token4),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
   ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
   loadRelationships();
-}
-
-async function connectGmail() {
-  window.location.href = "https://kpmhgkznqntkyedpdevs.supabase.co/functions/v1/gmail-auth";
-}
-
-async function checkGmailStatus() {
-  if (!currentUser) return;
-  const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${getUserId()}`, { headers: getHeaders(token) });
-  const data = await r.json();
-  const btn = document.getElementById('gmail-btn');
-  if (btn && data.length > 0) {
-    btn.textContent = '✓ Gmail kopplat';
-    btn.classList.add('connected');
-  }
 }
 
 function updateScrollHint() {
