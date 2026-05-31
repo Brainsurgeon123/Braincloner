@@ -284,22 +284,28 @@ function showApp() {
   saveGmailToken();
 }
 
+let gmailTokenSaved = false;
 async function saveGmailToken() {
-  if (!currentUser) return;
+  if (!currentUser || gmailTokenSaved) return;
+  gmailTokenSaved = true;
   const { data: { session } } = await sb.auth.getSession();
   if (!session?.provider_token) return;
   const token = session.access_token;
-  await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
-    method: 'POST',
-    headers: { ...getHeaders(token), Prefer: 'return=minimal,resolution=merge-duplicates' },
-    body: JSON.stringify({
-      user_id: currentUser.id,
-      access_token: session.provider_token,
-      refresh_token: session.provider_refresh_token || null,
-      gmail_email: currentUser.email,
-      updated_at: new Date().toISOString()
-    })
-  });
+  const check = await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${currentUser.id}`, { headers: getHeaders(token) });
+  const existing = await check.json();
+  if (existing.length > 0) {
+    await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${currentUser.id}`, {
+      method: 'PATCH',
+      headers: { ...getHeaders(token), Prefer: 'return=minimal' },
+      body: JSON.stringify({ access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, updated_at: new Date().toISOString() })
+    });
+  } else {
+    await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
+      method: 'POST',
+      headers: { ...getHeaders(token), Prefer: 'return=minimal' },
+      body: JSON.stringify({ user_id: currentUser.id, access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, gmail_email: currentUser.email, updated_at: new Date().toISOString() })
+    });
+  }
 }
 
 async function getToken() {
