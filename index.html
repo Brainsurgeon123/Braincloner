@@ -291,7 +291,7 @@ async function saveGmailToken() {
   const token = session.access_token;
   await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
     method: 'POST',
-    headers: { ...getHeaders(token), Prefer: 'resolution=merge-duplicates' },
+    headers: { ...getHeaders(token), Prefer: 'return=minimal,resolution=merge-duplicates' },
     body: JSON.stringify({
       user_id: currentUser.id,
       access_token: session.provider_token,
