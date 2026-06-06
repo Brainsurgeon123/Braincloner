@@ -122,6 +122,16 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
   .scroll-hint { display: block; }
 }
+
+/* Language picker */
+.lang-picker { position: relative; flex-shrink: 0; }
+.lang-btn { padding: 6px 10px; background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.lang-btn:hover { color: #e0e0e0; }
+.lang-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #111; border: 0.5px solid #222; border-radius: 10px; overflow: hidden; z-index: 100; min-width: 140px; }
+.lang-dropdown.open { display: block; }
+.lang-option { padding: 10px 14px; font-size: 13px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.lang-option:hover { background: #1a1a1a; color: #fff; }
+.lang-option.active { color: #a78bfa; }
 </style>
 </head>
 <body>
@@ -136,6 +146,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
         <button class="nav-btn" onclick="showPage('memories', this)">Minnesträning</button>
         <button class="nav-btn" onclick="showPage('relationships', this)">Relationer</button>
       </div>
+      <div class="lang-picker" id="lang-picker-out"><button class="lang-btn" onclick="toggleLangDropdown()"><span id="lang-flag-out">🇬🇧</span><span id="lang-label-out">EN</span><span>▾</span></button><div class="lang-dropdown" id="lang-dropdown-out"><div class="lang-option" onclick="setLang('en-US', '🇬🇧', 'EN')">🇬🇧 English</div><div class="lang-option" onclick="setLang('sv-SE', '🇸🇪', 'SV')">🇸🇪 Svenska</div></div></div>
       <div id="nav-logged-out">
         <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
@@ -146,6 +157,17 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
         <div class="user-pill">
           <div class="user-avatar" id="user-initials">?</div>
           <span id="user-name"></span>
+        </div>
+        <div class="lang-picker" id="lang-picker">
+          <button class="lang-btn" onclick="toggleLangDropdown()">
+            <span id="lang-flag">🇬🇧</span>
+            <span id="lang-label">EN</span>
+            <span>▾</span>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown">
+            <div class="lang-option" onclick="setLang('en-US', '🇬🇧', 'EN')">🇬🇧 English</div>
+            <div class="lang-option" onclick="setLang('sv-SE', '🇸🇪', 'SV')">🇸🇪 Svenska</div>
+          </div>
         </div>
         <button class="logout-btn" onclick="logout()">Logga ut</button>
       </div>
@@ -189,7 +211,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   <div class="page" id="page-memories">
     <div class="page-header"><div><div class="page-title">Minnesträning</div><div class="page-sub">Mata in information för att förbättra klonen</div></div></div>
     <div class="cat-grid" id="cat-grid"></div>
-    <div class="input-group"><div class="input-label">Innehåll</div><textarea id="mem-content" rows="3" placeholder="Beskriv något om personens värderingar, vanor, kommunikationsstil..."></textarea></div>
+    <div class="input-group"><div class="input-label" style="display:flex;justify-content:space-between;align-items:center;">Innehåll<button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;">🎤 Tala in</button></div><textarea id="mem-content" rows="3" placeholder="Beskriv något om personens värderingar, vanor, kommunikationsstil..."></textarea></div>
     <div class="input-group"><div class="input-label">Kort sammanfattning</div><input type="text" id="mem-summary" placeholder="En mening som beskriver minnet" /></div>
     <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()">+ Lägg till minne</button>
     <div class="mem-list" id="mem-list"></div>
@@ -514,6 +536,86 @@ async function addRelationship() {
   loadRelationships();
 }
 
+let currentLang = localStorage.getItem('braincloner_lang') || 'en-US';
+
+function initLang() {
+  const flag = currentLang === 'sv-SE' ? '🇸🇪' : '🇬🇧';
+  const label = currentLang === 'sv-SE' ? 'SV' : 'EN';
+  ['', '-out'].forEach(suffix => {
+    const f = document.getElementById('lang-flag' + suffix);
+    const l = document.getElementById('lang-label' + suffix);
+    if (f) f.textContent = flag;
+    if (l) l.textContent = label;
+  });
+}
+
+function toggleLangDropdown() {
+  document.getElementById('lang-dropdown')?.classList.toggle('open');
+  document.getElementById('lang-dropdown-out')?.classList.toggle('open');
+}
+
+function setLang(lang, flag, label) {
+  currentLang = lang;
+  localStorage.setItem('braincloner_lang', lang);
+  ['', '-out'].forEach(suffix => {
+    const f = document.getElementById('lang-flag' + suffix);
+    const l = document.getElementById('lang-label' + suffix);
+    const dd = document.getElementById('lang-dropdown' + suffix);
+    if (f) f.textContent = flag;
+    if (l) l.textContent = label;
+    if (dd) dd.classList.remove('open');
+  });
+  if (recognition && isRecording) { recognition.lang = lang; }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lang-picker')) {
+    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+let recognition = null;
+let isRecording = false;
+
+function toggleMic() {
+  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+    alert("Din webbläsare stödjer inte röstinmatning. Prova Chrome!");
+    return;
+  }
+  if (isRecording) { recognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = currentLang;
+  const btn = document.getElementById("mic-btn");
+  let finalTranscript = document.getElementById("mem-content").value;
+  recognition.onstart = () => {
+    isRecording = true;
+    btn.textContent = "🔴 Stoppa";
+    btn.style.borderColor = "#f87171";
+    btn.style.color = "#f87171";
+  };
+  recognition.onresult = (e) => {
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) { finalTranscript += e.results[i][0].transcript + " "; }
+      else { interim = e.results[i][0].transcript; }
+    }
+    document.getElementById("mem-content").value = finalTranscript + interim;
+  };
+  recognition.onerror = (e) => {
+    if (e.error === "language-not-supported") { recognition.lang = "en-US"; }
+  };
+  recognition.onend = () => {
+    isRecording = false;
+    btn.textContent = "🎤 Tala in";
+    btn.style.borderColor = "#2a3a5a";
+    btn.style.color = "#93c5fd";
+  };
+  recognition.start();
+}
+
 function updateScrollHint() {
   const sh = document.getElementById('scroll-hint');
   const isLanding = document.getElementById('page-landing').classList.contains('active');
@@ -529,6 +631,7 @@ function updateScrollHint() {
 window.addEventListener('scroll', updateScrollHint);
 
 initCategories();
+initLang();
 document.addEventListener('DOMContentLoaded', () => {
   init();
   setTimeout(updateScrollHint, 100);
