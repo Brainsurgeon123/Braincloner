@@ -87,10 +87,6 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 .mem-cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a1a1a; color: #555; white-space: nowrap; }
 .del-btn { background: none; border: none; cursor: pointer; color: #333; font-size: 18px; line-height: 1; padding: 0; }
 .del-btn:hover { color: #f87171; }
-.sql-section { margin-top: 24px; background: #0d0d0d; border: 0.5px solid #222; border-radius: 10px; padding: 16px; }
-.sql-label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-.sql-code { font-family: monospace; font-size: 11px; color: #666; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; }
-.copy-btn { margin-top: 10px; width: 100%; padding: 10px; background: #1a1a2a; color: #93c5fd; border: 0.5px solid #2a3a5a; border-radius: 8px; cursor: pointer; font-size: 13px; }
 
 /* Relations */
 .rel-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
@@ -197,10 +193,6 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
     <div class="input-group"><div class="input-label">Kort sammanfattning</div><input type="text" id="mem-summary" placeholder="En mening som beskriver minnet" /></div>
     <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()">+ Lägg till minne</button>
     <div class="mem-list" id="mem-list"></div>
-    <div class="sql-section" id="sql-section" style="display:none;">
-      <div class="sql-label">SQL – kör i Supabase SQL Editor</div>
-      <div class="sql-code" id="sql-code"></div>
-      <button class="copy-btn" onclick="copySQL()">Kopiera SQL</button>
     </div>
   </div>
 
@@ -326,6 +318,7 @@ function showPage(p, btn) {
   if (btn) btn.classList.add('active');
   if (p === 'approvals') loadApprovals();
   if (p === 'relationships') loadRelationships();
+  if (p === 'memories') loadMemories();
   if (p === 'landing') loadStats();
   window.scrollTo(0, 0);
   setTimeout(updateScrollHint, 50);
@@ -442,32 +435,55 @@ function initCategories() {
 
 function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 
-function addMemory() {
-  const content = document.getElementById('mem-content').value.trim();
-  const summary = document.getElementById('mem-summary').value.trim();
+async function addMemory() {
+  const content = document.getElementById("mem-content").value.trim();
+  const summary = document.getElementById("mem-summary").value.trim();
   if (!content) return;
-  memories.push({content, summary: summary||content.slice(0,60), category: currentCat});
-  document.getElementById('mem-content').value='';
-  document.getElementById('mem-summary').value='';
-  renderMemories(); generateSQL();
+  if (!currentUser) return alert("Du måste vara inloggad!");
+  const token = await getToken();
+  const btn = document.querySelector("[onclick=\"addMemory()\"]");
+  btn.textContent = "Sparar...";
+  btn.disabled = true;
+  const r = await fetch(`${SUPA_URL}/rest/v1/memories`, {
+    method: "POST",
+    headers: { ...getHeaders(token), Prefer: "return=minimal" },
+    body: JSON.stringify({
+      user_id: getUserId(),
+      content,
+      summary: summary || content.slice(0, 60),
+      category: currentCat,
+      tier: "full",
+      confidence: 1.0,
+      source: "manual_training",
+      activation_weight: 1.0
+    })
+  });
+  btn.textContent = "+ Lägg till minne";
+  btn.disabled = false;
+  if (r.ok) {
+    document.getElementById("mem-content").value = "";
+    document.getElementById("mem-summary").value = "";
+    loadMemories();
+  } else {
+    alert("Kunde inte spara minnet, försök igen!");
+  }
 }
 
-function renderMemories() {
-  document.getElementById('mem-list').innerHTML = memories.map((m,i) => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary}</div><div class="mem-text">${m.content}</div></div><span class="mem-cat-badge">${CAT_LABELS[m.category]||m.category}</span><button class="del-btn" onclick="deleteMem(${i})">×</button></div>`).join('');
+async function loadMemories() {
+  if (!currentUser) return;
+  const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${getUserId()}&order=created_at.desc`, { headers: getHeaders(token) });
+  const data = await r.json();
+  document.getElementById("mem-list").innerHTML = Array.isArray(data) && data.length
+    ? data.map(m => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary||""}</div><div class="mem-text">${m.content||""}</div></div><span class="mem-cat-badge">${CAT_LABELS[m.category]||m.category}</span><button class="del-btn" onclick="deleteMemory('${m.id}')">×</button></div>`).join("")
+    : "<div class=\"empty\">Inga minnen ännu</div>";
 }
 
-function deleteMem(i) { memories.splice(i,1); renderMemories(); generateSQL(); }
-
-function generateSQL() {
-  const sec = document.getElementById('sql-section');
-  if (!memories.length) { sec.style.display='none'; return; }
-  sec.style.display='block';
-  const uid = getUserId();
-  const rows = memories.map(m=>`  ('${uid}', '${m.content.replace(/'/g,"''")}', '${m.summary.replace(/'/g,"''")}', '${m.category}', 'full', 1.0, 'manual_training', 1.0)`).join(',\n');
-  document.getElementById('sql-code').textContent = `INSERT INTO memories (user_id, content, summary, category, tier, confidence, source, activation_weight)\nVALUES\n${rows};`;
+async function deleteMemory(id) {
+  const token = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/memories?id=eq.${id}`, { method: "DELETE", headers: getHeaders(token) });
+  loadMemories();
 }
-
-function copySQL() { navigator.clipboard.writeText(document.getElementById('sql-code').textContent); event.target.textContent='Kopierat!'; setTimeout(()=>event.target.textContent='Kopiera SQL',2000); }
 
 async function loadRelationships() {
   const uid = getUserId();
