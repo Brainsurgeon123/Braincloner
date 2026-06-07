@@ -23,6 +23,15 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
 .logout-btn:hover { border-color: #f87171; color: #f87171; }
 
+/* Lang picker */
+.lang-picker { position: relative; flex-shrink: 0; }
+.lang-btn { padding: 6px 10px; background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.lang-btn:hover { color: #e0e0e0; }
+.lang-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #111; border: 0.5px solid #222; border-radius: 10px; overflow: hidden; z-index: 100; min-width: 140px; }
+.lang-dropdown.open { display: block; }
+.lang-option { padding: 10px 14px; font-size: 13px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.lang-option:hover { background: #1a1a1a; color: #fff; }
+
 /* Pages */
 .page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
 .page.active { display: block; }
@@ -122,16 +131,6 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
   .scroll-hint { display: block; }
 }
-
-/* Language picker */
-.lang-picker { position: relative; flex-shrink: 0; }
-.lang-btn { padding: 6px 10px; background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-.lang-btn:hover { color: #e0e0e0; }
-.lang-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #111; border: 0.5px solid #222; border-radius: 10px; overflow: hidden; z-index: 100; min-width: 140px; }
-.lang-dropdown.open { display: block; }
-.lang-option { padding: 10px 14px; font-size: 13px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.lang-option:hover { background: #1a1a1a; color: #fff; }
-.lang-option.active { color: #a78bfa; }
 </style>
 </head>
 <body>
@@ -141,15 +140,29 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
     <div class="logo">Brain<span>Cloner</span></div>
     <div class="nav-right">
       <div class="nav-links" id="nav-links">
-        <button class="nav-btn active" onclick="showPage('landing', this)">Hem</button>
-        <button class="nav-btn" onclick="showPage('approvals', this)">Godkännanden</button>
-        <button class="nav-btn" onclick="showPage('memories', this)">Minnesträning</button>
-        <button class="nav-btn" onclick="showPage('relationships', this)">Relationer</button>
+        <button class="nav-btn active" onclick="showPage('landing', this)" data-t="nav_home">Hem</button>
+        <button class="nav-btn" onclick="showPage('approvals', this)" data-t="nav_approvals">Godkännanden</button>
+        <button class="nav-btn" onclick="showPage('memories', this)" data-t="nav_memories">Minnesträning</button>
+        <button class="nav-btn" onclick="showPage('relationships', this)" data-t="nav_relations">Relationer</button>
       </div>
+
+      <!-- Single lang picker, always visible -->
+      <div class="lang-picker" id="lang-picker">
+        <button class="lang-btn" onclick="toggleLangDropdown()">
+          <span id="lang-flag">🇬🇧</span>
+          <span id="lang-label">EN</span>
+          <span>▾</span>
+        </button>
+        <div class="lang-dropdown" id="lang-dropdown">
+          <div class="lang-option" onclick="setLang('en-US','🇬🇧','EN')">🇬🇧 English</div>
+          <div class="lang-option" onclick="setLang('sv-SE','🇸🇪','SV')">🇸🇪 Svenska</div>
+        </div>
+      </div>
+
       <div id="nav-logged-out">
         <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
-          Logga in
+          <span data-t="login">Logga in</span>
         </button>
       </div>
       <div id="nav-logged-in" style="display:none;align-items:center;gap:8px;">
@@ -157,18 +170,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
           <div class="user-avatar" id="user-initials">?</div>
           <span id="user-name"></span>
         </div>
-        <div class="lang-picker" id="lang-picker">
-          <button class="lang-btn" onclick="toggleLangDropdown()">
-            <span id="lang-flag">🇬🇧</span>
-            <span id="lang-label">EN</span>
-            <span>▾</span>
-          </button>
-          <div class="lang-dropdown" id="lang-dropdown">
-            <div class="lang-option" onclick="setLang('en-US', '🇬🇧', 'EN')">🇬🇧 English</div>
-            <div class="lang-option" onclick="setLang('sv-SE', '🇸🇪', 'SV')">🇸🇪 Svenska</div>
-          </div>
-        </div>
-        <button class="logout-btn" onclick="logout()">Logga ut</button>
+        <button class="logout-btn" onclick="logout()" data-t="logout">Logga ut</button>
       </div>
     </div>
   </nav>
@@ -176,60 +178,65 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   <!-- LANDING -->
   <div class="page active" id="page-landing">
     <div class="hero">
-      <h1>Klona din <span>hjärna</span><br>slipp svara på mail</h1>
-      <p>AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
-      <button class="hero-btn" onclick="showPage('approvals', document.querySelectorAll('.nav-btn')[1])">Öppna dashboard</button>
+      <h1 data-t="hero_title">Klona din <span>hjärna</span><br>slipp svara på mail</h1>
+      <p data-t="hero_sub">AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
+      <button class="hero-btn" onclick="showPage('approvals', document.querySelectorAll('.nav-btn')[1])" data-t="hero_btn">Öppna dashboard</button>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl">Väntande svar</div></div>
-      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl">Minnen inlärda</div></div>
-      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl">Skickade svar</div></div>
+      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl" data-t="stat_pending">Väntande svar</div></div>
+      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl" data-t="stat_memories">Minnen inlärda</div></div>
+      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl" data-t="stat_sent">Skickade svar</div></div>
     </div>
     <div class="features">
-      <div class="feature"><div class="feature-icon">🧠</div><h3>Levande minne</h3><p>Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
-      <div class="feature"><div class="feature-icon">🔒</div><h3>Du har kontroll</h3><p>Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
-      <div class="feature"><div class="feature-icon">⚡</div><h3>Automatiserat</h3><p>Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
+      <div class="feature"><div class="feature-icon">🧠</div><h3 data-t="f1_title">Levande minne</h3><p data-t="f1_desc">Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
+      <div class="feature"><div class="feature-icon">🔒</div><h3 data-t="f2_title">Du har kontroll</h3><p data-t="f2_desc">Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
+      <div class="feature"><div class="feature-icon">⚡</div><h3 data-t="f3_title">Automatiserat</h3><p data-t="f3_desc">Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
     </div>
   </div>
 
   <!-- APPROVALS -->
   <div class="page" id="page-approvals">
     <div class="page-header">
-      <div><div class="page-title">Godkännanden</div><div class="page-sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
-      <button class="btn btn-refresh" onclick="loadApprovals()">↻ Uppdatera</button>
+      <div><div class="page-title" data-t="nav_approvals">Godkännanden</div><div class="page-sub" data-t="approvals_sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
+      <button class="btn btn-refresh" onclick="loadApprovals()">↻</button>
     </div>
     <div class="stats-mini">
-      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l">Väntande</div></div>
-      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l">Godkända</div></div>
-      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l">Avvisade</div></div>
+      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l" data-t="filter_pending">Väntande</div></div>
+      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l" data-t="filter_approved">Godkända</div></div>
+      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l" data-t="filter_rejected">Avvisade</div></div>
     </div>
     <div id="approvals-list"></div>
   </div>
 
   <!-- MEMORIES -->
   <div class="page" id="page-memories">
-    <div class="page-header"><div><div class="page-title">Minnesträning</div><div class="page-sub">Mata in information för att förbättra klonen</div></div></div>
+    <div class="page-header"><div><div class="page-title" data-t="nav_memories">Minnesträning</div><div class="page-sub" data-t="memories_sub">Mata in information för att förbättra klonen</div></div></div>
     <div class="cat-grid" id="cat-grid"></div>
-    <div class="input-group"><div class="input-label" style="display:flex;justify-content:space-between;align-items:center;">Innehåll<button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;">🎤 Tala in</button></div><textarea id="mem-content" rows="3" placeholder="Beskriv något om personens värderingar, vanor, kommunikationsstil..."></textarea></div>
-    <div class="input-group"><div class="input-label">Kort sammanfattning</div><input type="text" id="mem-summary" placeholder="En mening som beskriver minnet" /></div>
-    <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()">+ Lägg till minne</button>
-    <div class="mem-list" id="mem-list"></div>
+    <div class="input-group">
+      <div class="input-label" style="display:flex;justify-content:space-between;align-items:center;">
+        <span data-t="mem_content_label">Innehåll</span>
+        <button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;" data-t="mic_btn">🎤 Tala in</button>
+      </div>
+      <textarea id="mem-content" rows="3" data-t-placeholder="mem_placeholder"></textarea>
     </div>
+    <div class="input-group"><div class="input-label" data-t="mem_summary_label">Kort sammanfattning</div><input type="text" id="mem-summary" data-t-placeholder="mem_summary_placeholder" /></div>
+    <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()" data-t="mem_add_btn">+ Lägg till minne</button>
+    <div class="mem-list" id="mem-list"></div>
   </div>
 
   <!-- RELATIONSHIPS -->
   <div class="page" id="page-relationships">
-    <div class="page-header"><div><div class="page-title">Relationer</div><div class="page-sub">Hantera kontakter och trust-nivåer</div></div></div>
+    <div class="page-header"><div><div class="page-title" data-t="nav_relations">Relationer</div><div class="page-sub" data-t="relations_sub">Hantera kontakter och trust-nivåer</div></div></div>
     <div class="add-rel-form">
-      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;">Lägg till kontakt</div>
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;" data-t="add_contact">Lägg till kontakt</div>
       <div class="form-grid">
-        <div class="input-group"><div class="input-label">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson" /></div>
+        <div class="input-group"><div class="input-label" data-t="rel_name">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson" /></div>
         <div class="input-group"><div class="input-label">Email</div><input type="text" id="rel-email" placeholder="anna@example.com" /></div>
-        <div class="input-group"><div class="input-label">Kommunikationsstil</div><input type="text" id="rel-style" placeholder="Formell, kort, direkt..." /></div>
-        <div class="input-group"><div class="input-label">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5" /></div>
+        <div class="input-group"><div class="input-label" data-t="rel_style">Kommunikationsstil</div><input type="text" id="rel-style" data-t-placeholder="rel_style_ph" /></div>
+        <div class="input-group"><div class="input-label" data-t="rel_trust">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5" /></div>
       </div>
-      <div class="input-group"><div class="input-label">Viktig kontext</div><input type="text" id="rel-context" placeholder="Gammal vän, affärspartner, klient..." /></div>
-      <button class="add-btn" onclick="addRelationship()">Lägg till kontakt</button>
+      <div class="input-group"><div class="input-label" data-t="rel_context">Viktig kontext</div><input type="text" id="rel-context" data-t-placeholder="rel_context_ph" /></div>
+      <button class="add-btn" onclick="addRelationship()" data-t="add_contact_btn">Lägg till kontakt</button>
     </div>
     <div id="rel-list"></div>
   </div>
@@ -240,7 +247,6 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 <script>
 const SUPA_URL = "https://kpmhgkznqntkyedpdevs.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwbWhna3pucW50a3llZHBkZXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzU2MDMsImV4cCI6MjA5MzUxMTYwM30.tvuv0lPiIuS6wtaq8f7DDb4BS8moJOCsIYWp1r0HFF0";
-
 const { createClient } = supabase;
 const sb = createClient(SUPA_URL, SUPA_KEY);
 
@@ -248,6 +254,129 @@ let currentUser = null;
 let currentFilter = 'pending';
 let approvalsData = [];
 
+// ── TRANSLATIONS ──────────────────────────────────────────
+const T = {
+  'sv-SE': {
+    nav_home: 'Hem', nav_approvals: 'Godkännanden', nav_memories: 'Minnesträning', nav_relations: 'Relationer',
+    login: 'Logga in', logout: 'Logga ut',
+    hero_title: 'Klona din <span>hjärna</span><br>slipp svara på mail',
+    hero_sub: 'AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.',
+    hero_btn: 'Öppna dashboard',
+    stat_pending: 'Väntande svar', stat_memories: 'Minnen inlärda', stat_sent: 'Skickade svar',
+    f1_title: 'Levande minne', f1_desc: 'Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.',
+    f2_title: 'Du har kontroll', f2_desc: 'Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.',
+    f3_title: 'Automatiserat', f3_desc: 'Kopplat direkt till Gmail – inga manuella steg behövs.',
+    approvals_sub: 'Granska och godkänn AI-klonens föreslagna svar',
+    filter_pending: 'Väntande', filter_approved: 'Godkända', filter_rejected: 'Avvisade',
+    memories_sub: 'Mata in information för att förbättra klonen',
+    mem_content_label: 'Innehåll', mic_btn: '🎤 Tala in',
+    mem_placeholder: 'Beskriv något om personens värderingar, vanor, kommunikationsstil...',
+    mem_summary_label: 'Kort sammanfattning', mem_summary_placeholder: 'En mening som beskriver minnet',
+    mem_add_btn: '+ Lägg till minne',
+    relations_sub: 'Hantera kontakter och trust-nivåer', add_contact: 'Lägg till kontakt',
+    rel_name: 'Namn', rel_style: 'Kommunikationsstil', rel_style_ph: 'Formell, kort, direkt...',
+    rel_trust: 'Trust-nivå (1-10)', rel_context: 'Viktig kontext', rel_context_ph: 'Gammal vän, affärspartner, klient...',
+    add_contact_btn: 'Lägg till kontakt',
+    empty_approvals: 'Inga väntande svar just nu', empty_approved: 'Inga godkända svar ännu',
+    empty_rejected: 'Inga avvisade svar', empty_memories: 'Inga minnen ännu', empty_contacts: 'Inga kontakter ännu',
+    approve_btn: '✓ Godkänn och skicka', reject_btn: '✗ Avvisa',
+    status_sent: 'Skickat', status_approved: 'Godkänt – skickas snart', status_pending: 'Väntar', status_rejected: 'Avvisad',
+    response_label: 'Föreslagen svar', sent_label: 'Skickat svar',
+    login_required: 'Logga in för att se dina godkännanden',
+    last_active: 'Senast aktiv', never: 'Aldrig', style_label: 'Stil', context_label: 'Kontext',
+    mic_stop: '🔴 Stoppa', mic_error: 'Din webbläsare stödjer inte röstinmatning. Prova Chrome!'
+  },
+  'en-US': {
+    nav_home: 'Home', nav_approvals: 'Approvals', nav_memories: 'Memory Training', nav_relations: 'Relationships',
+    login: 'Sign in', logout: 'Sign out',
+    hero_title: 'Clone your <span>brain</span><br>skip answering emails',
+    hero_sub: 'AI that learns exactly how you communicate and replies to emails for you – in your style, with your values.',
+    hero_btn: 'Open dashboard',
+    stat_pending: 'Pending replies', stat_memories: 'Memories learned', stat_sent: 'Sent replies',
+    f1_title: 'Living memory', f1_desc: 'The system learns your values, communication style and preferences over time.',
+    f2_title: 'You stay in control', f2_desc: 'All replies require your approval until you fully trust the clone.',
+    f3_title: 'Automated', f3_desc: 'Connected directly to Gmail – no manual steps needed.',
+    approvals_sub: 'Review and approve the AI clone\'s suggested replies',
+    filter_pending: 'Pending', filter_approved: 'Approved', filter_rejected: 'Rejected',
+    memories_sub: 'Feed information to improve the clone',
+    mem_content_label: 'Content', mic_btn: '🎤 Speak',
+    mem_placeholder: 'Describe something about the person\'s values, habits, communication style...',
+    mem_summary_label: 'Short summary', mem_summary_placeholder: 'One sentence describing the memory',
+    mem_add_btn: '+ Add memory',
+    relations_sub: 'Manage contacts and trust levels', add_contact: 'Add contact',
+    rel_name: 'Name', rel_style: 'Communication style', rel_style_ph: 'Formal, brief, direct...',
+    rel_trust: 'Trust level (1-10)', rel_context: 'Important context', rel_context_ph: 'Old friend, business partner, client...',
+    add_contact_btn: 'Add contact',
+    empty_approvals: 'No pending replies right now', empty_approved: 'No approved replies yet',
+    empty_rejected: 'No rejected replies', empty_memories: 'No memories yet', empty_contacts: 'No contacts yet',
+    approve_btn: '✓ Approve & send', reject_btn: '✗ Reject',
+    status_sent: 'Sent', status_approved: 'Approved – sending soon', status_pending: 'Pending', status_rejected: 'Rejected',
+    response_label: 'Suggested reply', sent_label: 'Sent reply',
+    login_required: 'Sign in to see your approvals',
+    last_active: 'Last active', never: 'Never', style_label: 'Style', context_label: 'Context',
+    mic_stop: '🔴 Stop', mic_error: 'Your browser does not support voice input. Try Chrome!'
+  }
+};
+
+let currentLang = localStorage.getItem('braincloner_lang') || 'en-US';
+
+function t(key) { return T[currentLang]?.[key] || T['en-US'][key] || key; }
+
+function applyTranslations() {
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    const val = t(key);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = val; }
+    else { el.innerHTML = val; }
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-t-placeholder'));
+  });
+  // Update mic btn text if not recording
+  const micBtn = document.getElementById('mic-btn');
+  if (micBtn && !isRecording) micBtn.textContent = t('mic_btn');
+  // Re-init categories with translated labels
+  initCategories();
+}
+
+function initLang() {
+  const flag = currentLang === 'sv-SE' ? '🇸🇪' : '🇬🇧';
+  const label = currentLang === 'sv-SE' ? 'SV' : 'EN';
+  document.getElementById('lang-flag').textContent = flag;
+  document.getElementById('lang-label').textContent = label;
+  applyTranslations();
+}
+
+function toggleLangDropdown() {
+  document.getElementById('lang-dropdown').classList.toggle('open');
+}
+
+function setLang(lang, flag, label) {
+  currentLang = lang;
+  localStorage.setItem('braincloner_lang', lang);
+  document.getElementById('lang-flag').textContent = flag;
+  document.getElementById('lang-label').textContent = label;
+  document.getElementById('lang-dropdown').classList.remove('open');
+  if (recognition && isRecording) recognition.lang = lang;
+  applyTranslations();
+  // Re-render current page content
+  const activePage = document.querySelector('.page.active');
+  if (activePage) {
+    const id = activePage.id.replace('page-', '');
+    if (id === 'approvals') renderApprovals();
+    if (id === 'memories') loadMemories();
+    if (id === 'relationships') loadRelationships();
+    if (id === 'landing') loadStats();
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lang-picker')) {
+    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// ── AUTH ──────────────────────────────────────────────────
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) { currentUser = session.user; showApp(); }
@@ -269,27 +398,21 @@ async function loginWithGoogle() {
   });
 }
 
-async function logout() {
-  await sb.auth.signOut();
-  window.location.reload();
-}
+async function logout() { await sb.auth.signOut(); window.location.reload(); }
 
 function showLogin() {
   currentUser = null;
-  const loggedOut = document.getElementById('nav-logged-out');
-  const loggedIn = document.getElementById('nav-logged-in');
-  if (loggedOut) loggedOut.style.display = 'block';
-  if (loggedIn) loggedIn.style.display = 'none';
+  document.getElementById('nav-logged-out').style.display = 'block';
+  document.getElementById('nav-logged-in').style.display = 'none';
   ['hero-pending','hero-memories','hero-sent','cnt-p','cnt-a','cnt-r'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = '-';
+    const el = document.getElementById(id); if (el) el.textContent = '-';
   });
 }
 
 function showApp() {
   document.getElementById('nav-logged-out').style.display = 'none';
   document.getElementById('nav-logged-in').style.display = 'flex';
-  const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'Användare';
+  const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'User';
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = name.split(' ')[0];
   document.getElementById('user-initials').textContent = initials;
@@ -308,14 +431,12 @@ async function saveGmailToken() {
   const existing = await check.json();
   if (existing.length > 0) {
     await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${currentUser.id}`, {
-      method: 'PATCH',
-      headers: { ...getHeaders(token), Prefer: 'return=minimal' },
+      method: 'PATCH', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
       body: JSON.stringify({ access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, updated_at: new Date().toISOString() })
     });
   } else {
     await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
-      method: 'POST',
-      headers: { ...getHeaders(token), Prefer: 'return=minimal' },
+      method: 'POST', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
       body: JSON.stringify({ user_id: currentUser.id, access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, gmail_email: currentUser.email, updated_at: new Date().toISOString() })
     });
   }
@@ -325,11 +446,7 @@ async function getToken() {
   const { data: { session } } = await sb.auth.getSession();
   return session?.access_token || SUPA_KEY;
 }
-
-function getHeaders(token) {
-  return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" };
-}
-
+function getHeaders(token) { return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" }; }
 function getUserId() { return currentUser?.id || null; }
 
 function showPage(p, btn) {
@@ -346,13 +463,8 @@ function showPage(p, btn) {
 }
 
 async function loadStats() {
-  if (!currentUser) {
-    ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-');
-    return;
-  }
-  const uid = getUserId();
-  const token = await getToken();
-  const h = getHeaders(token);
+  if (!currentUser) { ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-'); return; }
+  const uid = getUserId(); const token = await getToken(); const h = getHeaders(token);
   const [r1, r2, r3] = await Promise.all([
     fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.pending`, { headers: h }),
     fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${uid}`, { headers: h }),
@@ -374,22 +486,16 @@ function setFilter(filter) {
 
 async function loadApprovals() {
   if (!currentUser) {
-    document.getElementById('cnt-p').textContent = '-';
-    document.getElementById('cnt-a').textContent = '-';
-    document.getElementById('cnt-r').textContent = '-';
-    document.getElementById('approvals-list').innerHTML = '<div class="empty">Logga in för att se dina godkännanden</div>';
+    ['cnt-p','cnt-a','cnt-r'].forEach(id => document.getElementById(id).textContent = '-');
+    document.getElementById('approvals-list').innerHTML = `<div class="empty">${t('login_required')}</div>`;
     return;
   }
-  const uid = getUserId();
-  const token = await getToken();
+  const uid = getUserId(); const token = await getToken();
   const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders(token) });
   approvalsData = await r.json();
-  const pending = approvalsData.filter(a => a.status === 'pending');
-  const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent');
-  const rejected = approvalsData.filter(a => a.status === 'rejected');
-  document.getElementById('cnt-p').textContent = pending.length;
-  document.getElementById('cnt-a').textContent = approved.length;
-  document.getElementById('cnt-r').textContent = rejected.length;
+  document.getElementById('cnt-p').textContent = approvalsData.filter(a => a.status === 'pending').length;
+  document.getElementById('cnt-a').textContent = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent').length;
+  document.getElementById('cnt-r').textContent = approvalsData.filter(a => a.status === 'rejected').length;
   renderApprovals();
 }
 
@@ -397,97 +503,82 @@ function renderApprovals() {
   const list = document.getElementById('approvals-list');
   if (currentFilter === 'approved') {
     const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent')
-      .sort((a,b) => { if (a.status==='approved'&&b.status!=='approved') return -1; if (b.status==='approved'&&a.status!=='approved') return 1; return new Date(b.created_at)-new Date(a.created_at); });
-    if (!approved.length) { list.innerHTML = '<div class="empty">Inga godkända svar ännu</div>'; return; }
+      .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    if (!approved.length) { list.innerHTML = `<div class="empty">${t('empty_approved')}</div>`; return; }
     list.innerHTML = approved.map(a => {
       const finalResponse = a.user_modification || a.proposed_action?.response || '';
       const original = a.proposed_action?.original_message || '';
       const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-      const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
-      const date = new Date(a.created_at).toLocaleString('sv-SE');
+      const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
+      const date = new Date(a.created_at).toLocaleString();
       const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
-      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${a.status==='sent'?'Skickat':'Godkänt – skickas snart'}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">Skickat svar</div><div class="response-preview">${finalResponse}</div></div>`;
+      const statusText = a.status === 'sent' ? t('status_sent') : t('status_approved');
+      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${statusText}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">${t('sent_label')}</div><div class="response-preview">${finalResponse}</div></div>`;
     }).join(''); return;
   }
   if (currentFilter === 'rejected') {
     const rejected = approvalsData.filter(a => a.status === 'rejected');
-    if (!rejected.length) { list.innerHTML = '<div class="empty">Inga avvisade svar</div>'; return; }
+    if (!rejected.length) { list.innerHTML = `<div class="empty">${t('empty_rejected')}</div>`; return; }
     list.innerHTML = rejected.map(a => {
       const proposed = a.proposed_action?.response || '';
       const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-      const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
-      const date = new Date(a.created_at).toLocaleString('sv-SE');
-      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">Avvisad</span></div><div class="response-preview">${proposed}</div></div>`;
+      const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
+      const date = new Date(a.created_at).toLocaleString();
+      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">${t('status_rejected')}</span></div><div class="response-preview">${proposed}</div></div>`;
     }).join(''); return;
   }
   const pending = approvalsData.filter(a => a.status === 'pending');
-  if (!pending.length) { list.innerHTML = '<div class="empty">Inga väntande svar just nu</div>'; return; }
+  if (!pending.length) { list.innerHTML = `<div class="empty">${t('empty_approvals')}</div>`; return; }
   list.innerHTML = pending.map(a => {
     const proposed = a.proposed_action?.response || '';
     const original = a.proposed_action?.original_message || '';
     const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-    const sender = senderMatch ? senderMatch[1].trim() : 'Okänd';
-    const date = new Date(a.created_at).toLocaleString('sv-SE');
-    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge badge-pending" style="background:#2a2000;color:#fbbf24;">Väntar</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">Föreslagen svar</div><div class="response-preview">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">✓ Godkänn och skicka</button><button class="btn btn-reject" onclick="reject('${a.id}')">✗ Avvisa</button></div></div>`;
+    const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
+    const date = new Date(a.created_at).toLocaleString();
+    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a2000;color:#fbbf24;">${t('status_pending')}</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">${t('response_label')}</div><div class="response-preview">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">${t('approve_btn')}</button><button class="btn btn-reject" onclick="reject('${a.id}')">${t('reject_btn')}</button></div></div>`;
   }).join('');
 }
 
 async function approve(id) {
   const edited = document.getElementById(`edit-${id}`).value;
-  const token1 = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token1),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
+  const token = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
   loadApprovals();
 }
-
 async function reject(id) {
-  const token2 = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token2),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
+  const token = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
   loadApprovals();
 }
 
+// ── MEMORIES ──────────────────────────────────────────────
 const CATS = ['value','personality','preference','belief','habit','goal','communication','knowledge','experience'];
-const CAT_LABELS = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
+const CAT_LABELS_SV = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
+const CAT_LABELS_EN = {value:'Value',personality:'Personality',preference:'Preference',belief:'Belief',habit:'Habit',goal:'Goal',communication:'Communication',knowledge:'Knowledge',experience:'Experience'};
 let currentCat = 'value';
-let memories = [];
+
+function getCatLabels() { return currentLang === 'sv-SE' ? CAT_LABELS_SV : CAT_LABELS_EN; }
 
 function initCategories() {
-  document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${CAT_LABELS[c]}</button>`).join('');
+  const labels = getCatLabels();
+  document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${labels[c]}</button>`).join('');
 }
-
 function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 
 async function addMemory() {
-  const content = document.getElementById("mem-content").value.trim();
-  const summary = document.getElementById("mem-summary").value.trim();
+  const content = document.getElementById('mem-content').value.trim();
+  const summary = document.getElementById('mem-summary').value.trim();
   if (!content) return;
-  if (!currentUser) return alert("Du måste vara inloggad!");
+  if (!currentUser) return alert(t('login_required'));
   const token = await getToken();
-  const btn = document.querySelector("[onclick=\"addMemory()\"]");
-  btn.textContent = "Sparar...";
-  btn.disabled = true;
+  const btn = document.querySelector('[onclick="addMemory()"]');
+  btn.textContent = '...'; btn.disabled = true;
   const r = await fetch(`${SUPA_URL}/rest/v1/memories`, {
-    method: "POST",
-    headers: { ...getHeaders(token), Prefer: "return=minimal" },
-    body: JSON.stringify({
-      user_id: getUserId(),
-      content,
-      summary: summary || content.slice(0, 60),
-      category: currentCat,
-      tier: "full",
-      confidence: 1.0,
-      source: "manual_training",
-      activation_weight: 1.0
-    })
+    method: 'POST', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
+    body: JSON.stringify({ user_id: getUserId(), content, summary: summary || content.slice(0,60), category: currentCat, tier: 'full', confidence: 1.0, source: 'manual_training', activation_weight: 1.0 })
   });
-  btn.textContent = "+ Lägg till minne";
-  btn.disabled = false;
-  if (r.ok) {
-    document.getElementById("mem-content").value = "";
-    document.getElementById("mem-summary").value = "";
-    loadMemories();
-  } else {
-    alert("Kunde inte spara minnet, försök igen!");
-  }
+  btn.textContent = t('mem_add_btn'); btn.disabled = false;
+  if (r.ok) { document.getElementById('mem-content').value = ''; document.getElementById('mem-summary').value = ''; loadMemories(); }
 }
 
 async function loadMemories() {
@@ -495,29 +586,30 @@ async function loadMemories() {
   const token = await getToken();
   const r = await fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${getUserId()}&order=created_at.desc`, { headers: getHeaders(token) });
   const data = await r.json();
-  document.getElementById("mem-list").innerHTML = Array.isArray(data) && data.length
-    ? data.map(m => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary||""}</div><div class="mem-text">${m.content||""}</div></div><span class="mem-cat-badge">${CAT_LABELS[m.category]||m.category}</span><button class="del-btn" onclick="deleteMemory('${m.id}')">×</button></div>`).join("")
-    : "<div class=\"empty\">Inga minnen ännu</div>";
+  const labels = getCatLabels();
+  document.getElementById('mem-list').innerHTML = Array.isArray(data) && data.length
+    ? data.map(m => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary||''}</div><div class="mem-text">${m.content||''}</div></div><span class="mem-cat-badge">${labels[m.category]||m.category}</span><button class="del-btn" onclick="deleteMemory('${m.id}')">×</button></div>`).join('')
+    : `<div class="empty">${t('empty_memories')}</div>`;
 }
 
 async function deleteMemory(id) {
   const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/memories?id=eq.${id}`, { method: "DELETE", headers: getHeaders(token) });
+  await fetch(`${SUPA_URL}/rest/v1/memories?id=eq.${id}`, { method: 'DELETE', headers: getHeaders(token) });
   loadMemories();
 }
 
+// ── RELATIONSHIPS ─────────────────────────────────────────
 async function loadRelationships() {
-  const uid = getUserId();
-  const token3 = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token3) });
+  const uid = getUserId(); const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
   const data = await r.json();
   const list = document.getElementById('rel-list');
-  if (!data.length) { list.innerHTML='<div class="empty">Inga kontakter ännu</div>'; return; }
+  if (!data.length) { list.innerHTML=`<div class="empty">${t('empty_contacts')}</div>`; return; }
   list.innerHTML = data.map(rel => {
     const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
     const trust = rel.trust_level||0;
-    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString('sv-SE') : 'Aldrig';
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'Okänd'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`Stil: ${rel.communication_style}<br>`:''} ${rel.important_context?`Kontext: ${rel.important_context}<br>`:''} Senast aktiv: ${last}</div></div>`;
+    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
   }).join('');
 }
 
@@ -527,114 +619,54 @@ async function addRelationship() {
   const style = document.getElementById('rel-style').value.trim();
   const trust = parseInt(document.getElementById('rel-trust').value)||5;
   const context = document.getElementById('rel-context').value.trim();
-  if (!name||!email) return alert('Namn och email krävs');
-  const uid = getUserId();
-  const token4 = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token4),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+  if (!name||!email) return;
+  const uid = getUserId(); const token = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
   ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
   loadRelationships();
 }
 
-let currentLang = localStorage.getItem('braincloner_lang') || 'en-US';
-
-function initLang() {
-  const flag = currentLang === 'sv-SE' ? '🇸🇪' : '🇬🇧';
-  const label = currentLang === 'sv-SE' ? 'SV' : 'EN';
-  ['', '-out'].forEach(suffix => {
-    const f = document.getElementById('lang-flag' + suffix);
-    const l = document.getElementById('lang-label' + suffix);
-    if (f) f.textContent = flag;
-    if (l) l.textContent = label;
-  });
-}
-
-function toggleLangDropdown() {
-  document.getElementById('lang-dropdown')?.classList.toggle('open');
-  document.getElementById('lang-dropdown-out')?.classList.toggle('open');
-}
-
-function setLang(lang, flag, label) {
-  currentLang = lang;
-  localStorage.setItem('braincloner_lang', lang);
-  ['', '-out'].forEach(suffix => {
-    const f = document.getElementById('lang-flag' + suffix);
-    const l = document.getElementById('lang-label' + suffix);
-    const dd = document.getElementById('lang-dropdown' + suffix);
-    if (f) f.textContent = flag;
-    if (l) l.textContent = label;
-    if (dd) dd.classList.remove('open');
-  });
-  if (recognition && isRecording) { recognition.lang = lang; }
-}
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.lang-picker')) {
-    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
-  }
-});
-
+// ── MIC ───────────────────────────────────────────────────
 let recognition = null;
 let isRecording = false;
 
 function toggleMic() {
-  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-    alert("Din webbläsare stödjer inte röstinmatning. Prova Chrome!");
-    return;
-  }
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert(t('mic_error')); return; }
   if (isRecording) { recognition.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SR();
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = currentLang;
-  const btn = document.getElementById("mic-btn");
-  let finalTranscript = document.getElementById("mem-content").value;
-  recognition.onstart = () => {
-    isRecording = true;
-    btn.textContent = "🔴 Stoppa";
-    btn.style.borderColor = "#f87171";
-    btn.style.color = "#f87171";
-  };
+  const btn = document.getElementById('mic-btn');
+  let finalTranscript = document.getElementById('mem-content').value;
+  recognition.onstart = () => { isRecording = true; btn.textContent = t('mic_stop'); btn.style.borderColor = '#f87171'; btn.style.color = '#f87171'; };
   recognition.onresult = (e) => {
-    let interim = "";
+    let interim = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) { finalTranscript += e.results[i][0].transcript + " "; }
+      if (e.results[i].isFinal) { finalTranscript += e.results[i][0].transcript + ' '; }
       else { interim = e.results[i][0].transcript; }
     }
-    document.getElementById("mem-content").value = finalTranscript + interim;
+    document.getElementById('mem-content').value = finalTranscript + interim;
   };
-  recognition.onerror = (e) => {
-    if (e.error === "language-not-supported") { recognition.lang = "en-US"; }
-  };
-  recognition.onend = () => {
-    isRecording = false;
-    btn.textContent = "🎤 Tala in";
-    btn.style.borderColor = "#2a3a5a";
-    btn.style.color = "#93c5fd";
-  };
+  recognition.onend = () => { isRecording = false; btn.textContent = t('mic_btn'); btn.style.borderColor = '#2a3a5a'; btn.style.color = '#93c5fd'; };
   recognition.start();
 }
 
+// ── SCROLL HINT ───────────────────────────────────────────
 function updateScrollHint() {
   const sh = document.getElementById('scroll-hint');
   const isLanding = document.getElementById('page-landing').classList.contains('active');
   if (!isLanding) { sh.style.display = 'none'; return; }
   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  if (scrollable <= 0 || window.scrollY >= scrollable - 40) {
-    sh.style.display = 'none';
-  } else {
-    sh.style.display = 'block';
-  }
+  if (scrollable <= 0 || window.scrollY >= scrollable - 40) { sh.style.display = 'none'; } else { sh.style.display = 'block'; }
 }
-
 window.addEventListener('scroll', updateScrollHint);
 
-initCategories();
+// ── INIT ──────────────────────────────────────────────────
 initLang();
-document.addEventListener('DOMContentLoaded', () => {
-  init();
-  setTimeout(updateScrollHint, 100);
-});
+initCategories();
+document.addEventListener('DOMContentLoaded', () => { init(); setTimeout(updateScrollHint, 100); });
 </script>
 </body>
 </html>
