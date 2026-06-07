@@ -217,7 +217,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
         <span data-t="mem_content_label">Innehåll</span>
         <button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;" data-t="mic_btn">🎤 Tala in</button>
       </div>
-      <textarea id="mem-content" rows="3" data-t-placeholder="mem_placeholder"></textarea>
+      <textarea id="mem-content" rows="3"></textarea>
     </div>
     <div class="input-group"><div class="input-label" data-t="mem_summary_label">Kort sammanfattning</div><input type="text" id="mem-summary" data-t-placeholder="mem_summary_placeholder" /></div>
     <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()" data-t="mem_add_btn">+ Lägg till minne</button>
@@ -337,6 +337,7 @@ function applyTranslations() {
   if (micBtn && !isRecording) micBtn.textContent = t('mic_btn');
   // Re-init categories with translated labels
   initCategories();
+  updateCatPlaceholder();
 }
 
 function initLang() {
@@ -555,15 +556,47 @@ async function reject(id) {
 const CATS = ['value','personality','preference','belief','habit','goal','communication','knowledge','experience'];
 const CAT_LABELS_SV = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
 const CAT_LABELS_EN = {value:'Value',personality:'Personality',preference:'Preference',belief:'Belief',habit:'Habit',goal:'Goal',communication:'Communication',knowledge:'Knowledge',experience:'Experience'};
+
+const CAT_PLACEHOLDERS_SV = {
+  value: 'Vad är viktigast för dig i livet? T.ex: ärlighet, lojalitet, frihet, familj, karriär – och varför?',
+  personality: 'Hur skulle dina närmaste beskriva dig som person? Är du direkt, humoristisk, introvert, omtänksam?',
+  preference: 'Föredrar du korta direkta svar eller detaljerade förklaringar? Formellt eller avslappnat språk?',
+  belief: 'Vad tror du starkt på som andra kanske inte håller med om? Politiskt, socialt, professionellt?',
+  habit: 'Hur inleder du vanligtvis ett mail – hälsning, direkt på sak, eller lite småprat först?',
+  goal: 'Vad vill du uppnå det närmaste året inom karriär, relationer eller personlig utveckling?',
+  communication: 'Hur anpassar du tonen beroende på om det är en nära vän, kollega eller okänd klient?',
+  knowledge: 'Vad är du expert på eller riktigt kunnig inom? Vad frågar folk dig om råd?',
+  experience: 'Berätta om en erfarenhet som har format hur du kommunicerar eller tänker idag.'
+};
+
+const CAT_PLACEHOLDERS_EN = {
+  value: 'What matters most to you in life? E.g. honesty, loyalty, freedom, family, career – and why?',
+  personality: 'How would people close to you describe you? Direct, humorous, introverted, caring?',
+  preference: 'Do you prefer short direct answers or detailed explanations? Formal or casual language?',
+  belief: 'What do you strongly believe in that others might disagree with? Politically, socially, professionally?',
+  habit: 'How do you typically start an email – with a greeting, straight to the point, or some small talk first?',
+  goal: 'What do you want to achieve in the next year in career, relationships or personal growth?',
+  communication: 'How do you adjust your tone depending on whether it is a close friend, colleague or unknown client?',
+  knowledge: 'What are you an expert in or really knowledgeable about? What do people ask your advice on?',
+  experience: 'Tell about an experience that has shaped how you communicate or think today.'
+};
+
 let currentCat = 'value';
 
 function getCatLabels() { return currentLang === 'sv-SE' ? CAT_LABELS_SV : CAT_LABELS_EN; }
+function getCatPlaceholders() { return currentLang === 'sv-SE' ? CAT_PLACEHOLDERS_SV : CAT_PLACEHOLDERS_EN; }
+
+function updateCatPlaceholder() {
+  const ta = document.getElementById('mem-content');
+  if (ta) ta.placeholder = getCatPlaceholders()[currentCat] || '';
+}
 
 function initCategories() {
   const labels = getCatLabels();
   document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${labels[c]}</button>`).join('');
+  updateCatPlaceholder();
 }
-function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); updateCatPlaceholder(); }
 
 async function addMemory() {
   const content = document.getElementById('mem-content').value.trim();
