@@ -1,705 +1,164 @@
-<!DOCTYPE html>
-<html lang="sv">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-<title>BrainCloner</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, sans-serif; background: #080808; color: #e0e0e0; min-height: 100vh; }
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-/* Nav */
-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 0.5px solid #222; background: #080808; position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
-.logo span { color: #a78bfa; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
-.nav-links { display: flex; gap: 4px; }
-.nav-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; background: transparent; color: #888; transition: all 0.15s; }
-.nav-btn:hover { background: #1a1a1a; color: #e0e0e0; }
-.nav-btn.active { background: #1a1a1a; color: #fff; }
-.user-pill { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #1a1a1a; border-radius: 20px; font-size: 12px; color: #888; }
-.user-avatar { width: 24px; height: 24px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #a78bfa; }
-.logout-btn { padding: 6px 12px; background: transparent; border: 0.5px solid #333; border-radius: 8px; color: #666; font-size: 12px; cursor: pointer; }
-.logout-btn:hover { border-color: #f87171; color: #f87171; }
-
-/* Lang picker */
-.lang-picker { position: relative; flex-shrink: 0; }
-.lang-btn { padding: 6px 10px; background: #1a1a1a; border: 0.5px solid #333; border-radius: 8px; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-.lang-btn:hover { color: #e0e0e0; }
-.lang-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: #111; border: 0.5px solid #222; border-radius: 10px; overflow: hidden; z-index: 100; min-width: 140px; }
-.lang-dropdown.open { display: block; }
-.lang-option { padding: 10px 14px; font-size: 13px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.lang-option:hover { background: #1a1a1a; color: #fff; }
-
-/* Pages */
-.page { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
-.page.active { display: block; }
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.page-title { font-size: 22px; font-weight: 600; color: #fff; }
-.page-sub { font-size: 13px; color: #666; margin-top: 4px; }
-
-/* Hero */
-.hero { text-align: center; padding: 80px 0 60px; }
-.hero h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; color: #fff; margin-bottom: 16px; line-height: 1.1; }
-.hero h1 span { color: #a78bfa; }
-.hero p { font-size: 18px; color: #888; max-width: 500px; margin: 0 auto 32px; line-height: 1.6; }
-.hero-btn { padding: 14px 32px; background: #a78bfa; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 64px; }
-.feature { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 24px; }
-.feature-icon { font-size: 28px; margin-bottom: 12px; }
-.feature h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 8px; }
-.feature p { font-size: 13px; color: #666; line-height: 1.6; }
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
-.stat-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 20px; text-align: center; }
-.stat-card .num { font-size: 32px; font-weight: 700; color: #a78bfa; }
-.stat-card .lbl { font-size: 12px; color: #666; margin-top: 4px; }
-
-/* Stats mini */
-.stats-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.stat-mini { background: #111; border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: border-color 0.15s; }
-.stat-mini .n { font-size: 24px; font-weight: 600; }
-.stat-mini .l { font-size: 11px; color: #666; margin-top: 2px; }
-
-/* Cards */
-.card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.sender { font-size: 13px; color: #a78bfa; }
-.date-txt { font-size: 11px; color: #444; margin-top: 2px; }
-.badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
-.original-msg { font-size: 12px; color: #555; font-style: italic; border-left: 2px solid #222; padding-left: 10px; margin-bottom: 12px; line-height: 1.5; }
-.response-label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.response-preview { background: #0d0d0d; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; margin-bottom: 10px; white-space: pre-wrap; color: #ccc; }
-textarea { width: 100%; background: #0d0d0d; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 10px; font-size: 13px; color: #e0e0e0; min-height: 80px; resize: vertical; font-family: inherit; margin-bottom: 10px; }
-textarea:focus { outline: none; border-color: #a78bfa; }
-.btn-row { display: flex; gap: 8px; }
-.btn { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity 0.15s; }
-.btn:hover { opacity: 0.8; }
-.btn-approve { background: #0a2a0a; color: #4ade80; border: 0.5px solid #1a4a1a; }
-.btn-reject { background: #2a0a0a; color: #f87171; border: 0.5px solid #4a1a1a; }
-.btn-refresh { background: #1a1a2a; color: #93c5fd; border: 0.5px solid #2a3a5a; padding: 10px 20px; flex: 0; }
-.empty { text-align: center; padding: 60px; color: #444; font-size: 14px; }
-
-/* Memory */
-.cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.cat-btn { padding: 6px 14px; border-radius: 20px; border: 0.5px solid #2a2a2a; background: #111; color: #666; cursor: pointer; font-size: 12px; transition: all 0.15s; }
-.cat-btn.active { background: #2a1f4a; color: #a78bfa; border-color: #5a3fa0; }
-.input-group { margin-bottom: 16px; }
-.input-label { font-size: 12px; color: #666; margin-bottom: 6px; font-weight: 500; }
-input[type=text] { width: 100%; background: #0d0d0d; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e0e0e0; font-family: inherit; }
-input[type=text]:focus { outline: none; border-color: #a78bfa; }
-.mem-list { margin-top: 20px; }
-.mem-item { background: #111; border: 0.5px solid #222; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.mem-content { flex: 1; }
-.mem-summary { font-size: 12px; font-weight: 600; color: #a78bfa; margin-bottom: 4px; }
-.mem-text { font-size: 12px; color: #666; line-height: 1.5; }
-.mem-cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a1a1a; color: #555; white-space: nowrap; }
-.del-btn { background: none; border: none; cursor: pointer; color: #333; font-size: 18px; line-height: 1; padding: 0; }
-.del-btn:hover { color: #f87171; }
-
-/* Relations */
-.rel-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-.rel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: #2a1f4a; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #a78bfa; flex-shrink: 0; }
-.rel-name { font-size: 15px; font-weight: 600; color: #fff; }
-.rel-email { font-size: 12px; color: #555; }
-.trust-bar { height: 4px; background: #1a1a1a; border-radius: 2px; margin: 8px 0; overflow: hidden; }
-.trust-fill { height: 100%; border-radius: 2px; background: #a78bfa; }
-.rel-detail { font-size: 12px; color: #555; line-height: 1.6; }
-.add-rel-form { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.add-btn { margin-top: 12px; width: 100%; padding: 12px; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-
-/* Scroll hint */
-.scroll-hint { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #a78bfa; font-size: 28px; animation: bounce 1.5s infinite; z-index: 100; pointer-events: none; }
-@keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
-
-/* Mobil */
-@media (max-width: 640px) {
-  nav { padding: 10px 12px; }
-  .nav-right { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; flex: 1; min-width: 0; }
-  .nav-right::-webkit-scrollbar { display: none; }
-  .nav-links { flex-wrap: nowrap; }
-  .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
-  #nav-logged-out button, .user-pill, .logout-btn { white-space: nowrap; flex-shrink: 0; }
-  .hero { padding: 24px 16px 32px; }
-  .hero h1 { font-size: 36px; }
-  .hero p { font-size: 15px; }
-  .page { padding: 24px 16px; }
-  .hero-btn { width: 100%; }
-  .features { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .scroll-hint { display: block; }
-}
-</style>
-</head>
-<body>
-
-<div id="app">
-  <nav>
-    <div class="logo">Brain<span>Cloner</span></div>
-    <div class="nav-right">
-      <div class="nav-links" id="nav-links">
-        <button class="nav-btn active" onclick="showPage('landing', this)" data-t="nav_home">Hem</button>
-        <button class="nav-btn" onclick="showPage('approvals', this)" data-t="nav_approvals">Godkännanden</button>
-        <button class="nav-btn" onclick="showPage('memories', this)" data-t="nav_memories">Minnesträning</button>
-        <button class="nav-btn" onclick="showPage('relationships', this)" data-t="nav_relations">Relationer</button>
-      </div>
-
-      <!-- Single lang picker, always visible -->
-      <div class="lang-picker" id="lang-picker">
-        <button class="lang-btn" onclick="toggleLangDropdown()">
-          <span id="lang-flag">🇬🇧</span>
-          <span id="lang-label">EN</span>
-          <span>▾</span>
-        </button>
-        <div class="lang-dropdown" id="lang-dropdown">
-          <div class="lang-option" onclick="setLang('en-US','🇬🇧','EN')">🇬🇧 English</div>
-          <div class="lang-option" onclick="setLang('sv-SE','🇸🇪','SV')">🇸🇪 Svenska</div>
-        </div>
-      </div>
-
-      <div id="nav-logged-out">
-        <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
-          <span data-t="login">Logga in</span>
-        </button>
-      </div>
-      <div id="nav-logged-in" style="display:none;align-items:center;gap:8px;">
-        <div class="user-pill">
-          <div class="user-avatar" id="user-initials">?</div>
-          <span id="user-name"></span>
-        </div>
-        <button class="logout-btn" onclick="logout()" data-t="logout">Logga ut</button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- LANDING -->
-  <div class="page active" id="page-landing">
-    <div class="hero">
-      <h1 data-t="hero_title">Klona din <span>hjärna</span><br>slipp svara på mail</h1>
-      <p data-t="hero_sub">AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
-      <button class="hero-btn" onclick="showPage('approvals', document.querySelectorAll('.nav-btn')[1])" data-t="hero_btn">Öppna dashboard</button>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl" data-t="stat_pending">Väntande svar</div></div>
-      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl" data-t="stat_memories">Minnen inlärda</div></div>
-      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl" data-t="stat_sent">Skickade svar</div></div>
-    </div>
-    <div class="features">
-      <div class="feature"><div class="feature-icon">🧠</div><h3 data-t="f1_title">Levande minne</h3><p data-t="f1_desc">Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
-      <div class="feature"><div class="feature-icon">🔒</div><h3 data-t="f2_title">Du har kontroll</h3><p data-t="f2_desc">Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
-      <div class="feature"><div class="feature-icon">⚡</div><h3 data-t="f3_title">Automatiserat</h3><p data-t="f3_desc">Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
-    </div>
-  </div>
-
-  <!-- APPROVALS -->
-  <div class="page" id="page-approvals">
-    <div class="page-header">
-      <div><div class="page-title" data-t="nav_approvals">Godkännanden</div><div class="page-sub" data-t="approvals_sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
-      <button class="btn btn-refresh" onclick="loadApprovals()">↻</button>
-    </div>
-    <div class="stats-mini">
-      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l" data-t="filter_pending">Väntande</div></div>
-      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l" data-t="filter_approved">Godkända</div></div>
-      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l" data-t="filter_rejected">Avvisade</div></div>
-    </div>
-    <div id="approvals-list"></div>
-  </div>
-
-  <!-- MEMORIES -->
-  <div class="page" id="page-memories">
-    <div class="page-header"><div><div class="page-title" data-t="nav_memories">Minnesträning</div><div class="page-sub" data-t="memories_sub">Mata in information för att förbättra klonen</div></div></div>
-    <div class="cat-grid" id="cat-grid"></div>
-    <div class="input-group">
-      <div class="input-label" style="display:flex;justify-content:space-between;align-items:center;">
-        <span data-t="mem_content_label">Innehåll</span>
-        <button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;" data-t="mic_btn">🎤 Tala in</button>
-      </div>
-      <textarea id="mem-content" rows="3"></textarea>
-    </div>
-    <div class="input-group"><div class="input-label" data-t="mem_summary_label">Kort sammanfattning</div><input type="text" id="mem-summary" data-t-placeholder="mem_summary_placeholder" /></div>
-    <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()" data-t="mem_add_btn">+ Lägg till minne</button>
-    <div class="mem-list" id="mem-list"></div>
-  </div>
-
-  <!-- RELATIONSHIPS -->
-  <div class="page" id="page-relationships">
-    <div class="page-header"><div><div class="page-title" data-t="nav_relations">Relationer</div><div class="page-sub" data-t="relations_sub">Hantera kontakter och trust-nivåer</div></div></div>
-    <div class="add-rel-form">
-      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;" data-t="add_contact">Lägg till kontakt</div>
-      <div class="form-grid">
-        <div class="input-group"><div class="input-label" data-t="rel_name">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson" /></div>
-        <div class="input-group"><div class="input-label">Email</div><input type="text" id="rel-email" placeholder="anna@example.com" /></div>
-        <div class="input-group"><div class="input-label" data-t="rel_style">Kommunikationsstil</div><input type="text" id="rel-style" data-t-placeholder="rel_style_ph" /></div>
-        <div class="input-group"><div class="input-label" data-t="rel_trust">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5" /></div>
-      </div>
-      <div class="input-group"><div class="input-label" data-t="rel_context">Viktig kontext</div><input type="text" id="rel-context" data-t-placeholder="rel_context_ph" /></div>
-      <button class="add-btn" onclick="addRelationship()" data-t="add_contact_btn">Lägg till kontakt</button>
-    </div>
-    <div id="rel-list"></div>
-  </div>
-</div>
-
-<div class="scroll-hint" id="scroll-hint">↓</div>
-
-<script>
-const SUPA_URL = "https://kpmhgkznqntkyedpdevs.supabase.co";
-const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwbWhna3pucW50a3llZHBkZXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzU2MDMsImV4cCI6MjA5MzUxMTYwM30.tvuv0lPiIuS6wtaq8f7DDb4BS8moJOCsIYWp1r0HFF0";
-const { createClient } = supabase;
-const sb = createClient(SUPA_URL, SUPA_KEY);
-
-let currentUser = null;
-let currentFilter = 'pending';
-let approvalsData = [];
-
-// ── TRANSLATIONS ──────────────────────────────────────────
-const T = {
-  'sv-SE': {
-    nav_home: 'Hem', nav_approvals: 'Godkännanden', nav_memories: 'Minnesträning', nav_relations: 'Relationer',
-    login: 'Logga in', logout: 'Logga ut',
-    hero_title: 'Klona din <span>hjärna</span><br>slipp svara på mail',
-    hero_sub: 'AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.',
-    hero_btn: 'Öppna dashboard',
-    stat_pending: 'Väntande svar', stat_memories: 'Minnen inlärda', stat_sent: 'Skickade svar',
-    f1_title: 'Levande minne', f1_desc: 'Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.',
-    f2_title: 'Du har kontroll', f2_desc: 'Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.',
-    f3_title: 'Automatiserat', f3_desc: 'Kopplat direkt till Gmail – inga manuella steg behövs.',
-    approvals_sub: 'Granska och godkänn AI-klonens föreslagna svar',
-    filter_pending: 'Väntande', filter_approved: 'Godkända', filter_rejected: 'Avvisade',
-    memories_sub: 'Mata in information för att förbättra klonen',
-    mem_content_label: 'Innehåll', mic_btn: '🎤 Tala in',
-    mem_placeholder: 'Beskriv något om personens värderingar, vanor, kommunikationsstil...',
-    mem_summary_label: 'Kort sammanfattning', mem_summary_placeholder: 'En mening som beskriver minnet',
-    mem_add_btn: '+ Lägg till minne',
-    relations_sub: 'Hantera kontakter och trust-nivåer', add_contact: 'Lägg till kontakt',
-    rel_name: 'Namn', rel_style: 'Kommunikationsstil', rel_style_ph: 'Formell, kort, direkt...',
-    rel_trust: 'Trust-nivå (1-10)', rel_context: 'Viktig kontext', rel_context_ph: 'Gammal vän, affärspartner, klient...',
-    add_contact_btn: 'Lägg till kontakt',
-    empty_approvals: 'Inga väntande svar just nu', empty_approved: 'Inga godkända svar ännu',
-    empty_rejected: 'Inga avvisade svar', empty_memories: 'Inga minnen ännu', empty_contacts: 'Inga kontakter ännu',
-    approve_btn: '✓ Godkänn och skicka', reject_btn: '✗ Avvisa',
-    status_sent: 'Skickat', status_approved: 'Godkänt – skickas snart', status_pending: 'Väntar', status_rejected: 'Avvisad',
-    response_label: 'Föreslagen svar', sent_label: 'Skickat svar',
-    login_required: 'Logga in för att se dina godkännanden',
-    last_active: 'Senast aktiv', never: 'Aldrig', style_label: 'Stil', context_label: 'Kontext',
-    mic_stop: '🔴 Stoppa', mic_error: 'Din webbläsare stödjer inte röstinmatning. Prova Chrome!'
-  },
-  'en-US': {
-    nav_home: 'Home', nav_approvals: 'Approvals', nav_memories: 'Memory Training', nav_relations: 'Relationships',
-    login: 'Sign in', logout: 'Sign out',
-    hero_title: 'Clone your <span>brain</span><br>skip answering emails',
-    hero_sub: 'AI that learns exactly how you communicate and replies to emails for you – in your style, with your values.',
-    hero_btn: 'Open dashboard',
-    stat_pending: 'Pending replies', stat_memories: 'Memories learned', stat_sent: 'Sent replies',
-    f1_title: 'Living memory', f1_desc: 'The system learns your values, communication style and preferences over time.',
-    f2_title: 'You stay in control', f2_desc: 'All replies require your approval until you fully trust the clone.',
-    f3_title: 'Automated', f3_desc: 'Connected directly to Gmail – no manual steps needed.',
-    approvals_sub: 'Review and approve the AI clone\'s suggested replies',
-    filter_pending: 'Pending', filter_approved: 'Approved', filter_rejected: 'Rejected',
-    memories_sub: 'Feed information to improve the clone',
-    mem_content_label: 'Content', mic_btn: '🎤 Speak',
-    mem_placeholder: 'Describe something about the person\'s values, habits, communication style...',
-    mem_summary_label: 'Short summary', mem_summary_placeholder: 'One sentence describing the memory',
-    mem_add_btn: '+ Add memory',
-    relations_sub: 'Manage contacts and trust levels', add_contact: 'Add contact',
-    rel_name: 'Name', rel_style: 'Communication style', rel_style_ph: 'Formal, brief, direct...',
-    rel_trust: 'Trust level (1-10)', rel_context: 'Important context', rel_context_ph: 'Old friend, business partner, client...',
-    add_contact_btn: 'Add contact',
-    empty_approvals: 'No pending replies right now', empty_approved: 'No approved replies yet',
-    empty_rejected: 'No rejected replies', empty_memories: 'No memories yet', empty_contacts: 'No contacts yet',
-    approve_btn: '✓ Approve & send', reject_btn: '✗ Reject',
-    status_sent: 'Sent', status_approved: 'Approved – sending soon', status_pending: 'Pending', status_rejected: 'Rejected',
-    response_label: 'Suggested reply', sent_label: 'Sent reply',
-    login_required: 'Sign in to see your approvals',
-    last_active: 'Last active', never: 'Never', style_label: 'Style', context_label: 'Context',
-    mic_stop: '🔴 Stop', mic_error: 'Your browser does not support voice input. Try Chrome!'
-  }
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-let currentLang = localStorage.getItem('braincloner_lang') || 'en-US';
-
-function t(key) { return T[currentLang]?.[key] || T['en-US'][key] || key; }
-
-function applyTranslations() {
-  document.querySelectorAll('[data-t]').forEach(el => {
-    const key = el.getAttribute('data-t');
-    const val = t(key);
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = val; }
-    else { el.innerHTML = val; }
-  });
-  document.querySelectorAll('[data-t-placeholder]').forEach(el => {
-    el.placeholder = t(el.getAttribute('data-t-placeholder'));
-  });
-  // Update mic btn text if not recording
-  const micBtn = document.getElementById('mic-btn');
-  if (micBtn && !isRecording) micBtn.textContent = t('mic_btn');
-  // Re-init categories with translated labels
-  initCategories();
-  updateCatPlaceholder();
-}
-
-function initLang() {
-  const flag = currentLang === 'sv-SE' ? '🇸🇪' : '🇬🇧';
-  const label = currentLang === 'sv-SE' ? 'SV' : 'EN';
-  document.getElementById('lang-flag').textContent = flag;
-  document.getElementById('lang-label').textContent = label;
-  applyTranslations();
-}
-
-function toggleLangDropdown() {
-  document.getElementById('lang-dropdown').classList.toggle('open');
-}
-
-function setLang(lang, flag, label) {
-  currentLang = lang;
-  localStorage.setItem('braincloner_lang', lang);
-  document.getElementById('lang-flag').textContent = flag;
-  document.getElementById('lang-label').textContent = label;
-  document.getElementById('lang-dropdown').classList.remove('open');
-  if (recognition && isRecording) recognition.lang = lang;
-  applyTranslations();
-  // Re-render current page content
-  const activePage = document.querySelector('.page.active');
-  if (activePage) {
-    const id = activePage.id.replace('page-', '');
-    if (id === 'approvals') renderApprovals();
-    if (id === 'memories') loadMemories();
-    if (id === 'relationships') loadRelationships();
-    if (id === 'landing') loadStats();
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
-}
 
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.lang-picker')) {
-    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
+  try {
+    const { message, user_id, sender_email, channel = "email", gmail_message_id } = await req.json();
+
+    if (!message || !user_id) {
+      return new Response(
+        JSON.stringify({ error: "message och user_id krävs" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const embeddingResponse = await fetch("https://api.voyageai.com/v1/embeddings", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${Deno.env.get("VOYAGE_API_KEY")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ model: "voyage-3", input: [message] }),
+    });
+
+    if (!embeddingResponse.ok) throw new Error(`Voyage fel: ${await embeddingResponse.text()}`);
+    const embeddingData = await embeddingResponse.json();
+    const queryEmbedding = embeddingData.data[0].embedding;
+
+    const { data: memories, error: memError } = await supabase.rpc("search_memories", {
+      query_embedding: queryEmbedding,
+      match_user_id: user_id,
+      match_limit: 10,
+    });
+    if (memError) throw memError;
+
+    let relationship = null;
+    let trustConfig = null;
+
+    if (sender_email) {
+      const { data: rel } = await supabase
+        .from("relationships")
+        .select("*")
+        .eq("user_id", user_id)
+        .eq("contact_email", sender_email)
+        .single();
+      relationship = rel;
+
+      if (rel) {
+        const { data: trust } = await supabase
+          .from("trust_config")
+          .select("*")
+          .eq("user_id", user_id)
+          .eq("contact_id", rel.id)
+          .eq("channel", channel)
+          .single();
+        trustConfig = trust;
+      }
+    }
+
+    const memoryContext = memories?.length > 0
+      ? memories.map((m: any) => `[${m.category}] ${m.content}`).join("\n")
+      : "Inga relevanta minnen hittades.";
+
+    const relationshipContext = relationship
+      ? `\nAvsändaren ${relationship.contact_name} (trust-nivå: ${relationship.trust_level}/10):\n- Kommunikationsstil: ${relationship.communication_style}\n- Viktig kontext: ${relationship.important_context}`
+      : "\nOkänd avsändare — var försiktig och formell.";
+
+    const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY")!,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1024,
+        system: `Du är en AI-klon av en specifik person. Generera ALLTID exakt 2 olika svarsalternativ.\n\nPersonens värderingar och minnen:\n${memoryContext}\n\nInformation om avsändaren:\n${relationshipContext}\n\nRegler:\n- Svara alltid i första person\n- Matcha personens ton och stil exakt\n- Om mailet är en ja/nej-fråga, ge ett ja-svar och ett nej-svar\n- Om det inte är en ja/nej-fråga, ge två olika varianter\n- Svara ALLTID i detta exakta JSON-format utan markdown:\n{"alternative1": "första svaret här", "alternative2": "andra svaret här"}`,
+        messages: [{ role: "user", content: message }],
+      }),
+    });
+
+    if (!claudeResponse.ok) throw new Error(`Claude fel: ${await claudeResponse.text()}`);
+    const claudeData = await claudeResponse.json();
+
+    let alternatives = { alternative1: "", alternative2: "" };
+    try {
+      const text = claudeData.content[0].text;
+      const cleaned = text.replace(/```json|```/g, "").trim();
+      alternatives = JSON.parse(cleaned);
+    } catch (e) {
+      alternatives = { alternative1: claudeData.content[0].text, alternative2: "" };
+    }
+
+    const proposedResponse = alternatives.alternative1;
+    const trustLevel = trustConfig?.trust_level ?? "low";
+    const requiresApproval = trustLevel !== "high";
+
+    if (requiresApproval) {
+      const { data: approval, error: approvalError } = await supabase
+        .from("pending_approvals")
+        .insert({
+          user_id,
+          contact_id: relationship?.id ?? null,
+          proposed_action: {
+            response: proposedResponse,
+            alternative2: alternatives.alternative2,
+            original_message: message
+          },
+          memories_used: memories?.map((m: any) => m.id) ?? [],
+          action_type: "reply",
+          channel,
+          reasoning: `Avsändare: ${sender_email ?? "okänd"} | Trust: ${trustLevel} | Minnen använda: ${memories?.length ?? 0}`,
+          status: "pending",
+          gmail_message_id: gmail_message_id ?? null,
+          expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        })
+        .select()
+        .single();
+
+      if (approvalError) throw approvalError;
+
+      return new Response(
+        JSON.stringify({
+          status: "pending_approval",
+          approval_id: approval.id,
+          proposed_response: proposedResponse,
+          alternative2: alternatives.alternative2,
+          memories_used: memories?.length ?? 0,
+          trust_level: trustLevel,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        status: "sent",
+        response: proposedResponse,
+        memories_used: memories?.length ?? 0,
+        trust_level: trustLevel,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
-
-// ── AUTH ──────────────────────────────────────────────────
-async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { currentUser = session.user; showApp(); }
-  else { showLogin(); }
-  sb.auth.onAuthStateChange((event, session) => {
-    if (session) { currentUser = session.user; showApp(); }
-    else { showLogin(); }
-  });
-}
-
-async function loginWithGoogle() {
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: window.location.href,
-      scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send',
-      queryParams: { access_type: 'offline', prompt: 'consent' }
-    }
-  });
-}
-
-async function logout() { await sb.auth.signOut(); window.location.reload(); }
-
-function showLogin() {
-  currentUser = null;
-  document.getElementById('nav-logged-out').style.display = 'block';
-  document.getElementById('nav-logged-in').style.display = 'none';
-  ['hero-pending','hero-memories','hero-sent','cnt-p','cnt-a','cnt-r'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.textContent = '-';
-  });
-}
-
-function showApp() {
-  document.getElementById('nav-logged-out').style.display = 'none';
-  document.getElementById('nav-logged-in').style.display = 'flex';
-  const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'User';
-  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-  document.getElementById('user-name').textContent = name.split(' ')[0];
-  document.getElementById('user-initials').textContent = initials;
-  loadStats();
-  saveGmailToken();
-}
-
-let gmailTokenSaved = false;
-async function saveGmailToken() {
-  if (!currentUser || gmailTokenSaved) return;
-  gmailTokenSaved = true;
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session?.provider_token) return;
-  const token = session.access_token;
-  const check = await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${currentUser.id}`, { headers: getHeaders(token) });
-  const existing = await check.json();
-  if (existing.length > 0) {
-    await fetch(`${SUPA_URL}/rest/v1/gmail_tokens?user_id=eq.${currentUser.id}`, {
-      method: 'PATCH', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
-      body: JSON.stringify({ access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, updated_at: new Date().toISOString() })
-    });
-  } else {
-    await fetch(`${SUPA_URL}/rest/v1/gmail_tokens`, {
-      method: 'POST', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
-      body: JSON.stringify({ user_id: currentUser.id, access_token: session.provider_token, refresh_token: session.provider_refresh_token || null, gmail_email: currentUser.email, updated_at: new Date().toISOString() })
-    });
-  }
-}
-
-async function getToken() {
-  const { data: { session } } = await sb.auth.getSession();
-  return session?.access_token || SUPA_KEY;
-}
-function getHeaders(token) { return { apikey: SUPA_KEY, Authorization: `Bearer ${token || SUPA_KEY}`, "Content-Type": "application/json" }; }
-function getUserId() { return currentUser?.id || null; }
-
-function showPage(p, btn) {
-  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('page-' + p).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (p === 'approvals') loadApprovals();
-  if (p === 'relationships') loadRelationships();
-  if (p === 'memories') loadMemories();
-  if (p === 'landing') loadStats();
-  window.scrollTo(0, 0);
-  setTimeout(updateScrollHint, 50);
-}
-
-async function loadStats() {
-  if (!currentUser) { ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-'); return; }
-  const uid = getUserId(); const token = await getToken(); const h = getHeaders(token);
-  const [r1, r2, r3] = await Promise.all([
-    fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.pending`, { headers: h }),
-    fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${uid}`, { headers: h }),
-    fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.sent`, { headers: h })
-  ]);
-  const [p, m, s] = await Promise.all([r1.json(), r2.json(), r3.json()]);
-  document.getElementById('hero-pending').textContent = Array.isArray(p) ? p.length : '-';
-  document.getElementById('hero-memories').textContent = Array.isArray(m) ? m.length : '-';
-  document.getElementById('hero-sent').textContent = Array.isArray(s) ? s.length : '-';
-}
-
-function setFilter(filter) {
-  currentFilter = filter;
-  const colors = { pending: '#93c5fd', approved: '#4ade80', rejected: '#f87171' };
-  document.querySelectorAll('.stat-mini').forEach(el => el.style.border = '1px solid transparent');
-  document.getElementById('filter-' + filter).style.border = `1px solid ${colors[filter]}`;
-  renderApprovals();
-}
-
-async function loadApprovals() {
-  if (!currentUser) {
-    ['cnt-p','cnt-a','cnt-r'].forEach(id => document.getElementById(id).textContent = '-');
-    document.getElementById('approvals-list').innerHTML = `<div class="empty">${t('login_required')}</div>`;
-    return;
-  }
-  const uid = getUserId(); const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders(token) });
-  approvalsData = await r.json();
-  document.getElementById('cnt-p').textContent = approvalsData.filter(a => a.status === 'pending').length;
-  document.getElementById('cnt-a').textContent = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent').length;
-  document.getElementById('cnt-r').textContent = approvalsData.filter(a => a.status === 'rejected').length;
-  renderApprovals();
-}
-
-function renderApprovals() {
-  const list = document.getElementById('approvals-list');
-  if (currentFilter === 'approved') {
-    const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent')
-      .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-    if (!approved.length) { list.innerHTML = `<div class="empty">${t('empty_approved')}</div>`; return; }
-    list.innerHTML = approved.map(a => {
-      const finalResponse = a.user_modification || a.proposed_action?.response || '';
-      const original = a.proposed_action?.original_message || '';
-      const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-      const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
-      const date = new Date(a.created_at).toLocaleString();
-      const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
-      const statusText = a.status === 'sent' ? t('status_sent') : t('status_approved');
-      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${statusText}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">${t('sent_label')}</div><div class="response-preview">${finalResponse}</div></div>`;
-    }).join(''); return;
-  }
-  if (currentFilter === 'rejected') {
-    const rejected = approvalsData.filter(a => a.status === 'rejected');
-    if (!rejected.length) { list.innerHTML = `<div class="empty">${t('empty_rejected')}</div>`; return; }
-    list.innerHTML = rejected.map(a => {
-      const proposed = a.proposed_action?.response || '';
-      const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-      const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
-      const date = new Date(a.created_at).toLocaleString();
-      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">${t('status_rejected')}</span></div><div class="response-preview">${proposed}</div></div>`;
-    }).join(''); return;
-  }
-  const pending = approvalsData.filter(a => a.status === 'pending');
-  if (!pending.length) { list.innerHTML = `<div class="empty">${t('empty_approvals')}</div>`; return; }
-  list.innerHTML = pending.map(a => {
-    const proposed = a.proposed_action?.response || '';
-    const original = a.proposed_action?.original_message || '';
-    const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
-    const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
-    const date = new Date(a.created_at).toLocaleString();
-    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a2000;color:#fbbf24;">${t('status_pending')}</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">${t('response_label')}</div><div class="response-preview">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">${t('approve_btn')}</button><button class="btn btn-reject" onclick="reject('${a.id}')">${t('reject_btn')}</button></div></div>`;
-  }).join('');
-}
-
-async function approve(id) {
-  const edited = document.getElementById(`edit-${id}`).value;
-  const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({status:'approved',user_modification:edited}) });
-  loadApprovals();
-}
-async function reject(id) {
-  const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
-  loadApprovals();
-}
-
-// ── MEMORIES ──────────────────────────────────────────────
-const CATS = ['value','personality','preference','belief','habit','goal','communication','knowledge','experience'];
-const CAT_LABELS_SV = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
-const CAT_LABELS_EN = {value:'Value',personality:'Personality',preference:'Preference',belief:'Belief',habit:'Habit',goal:'Goal',communication:'Communication',knowledge:'Knowledge',experience:'Experience'};
-
-const CAT_PLACEHOLDERS_SV = {
-  value: 'Vad är viktigast för dig i livet? T.ex: ärlighet, lojalitet, frihet, familj, karriär – och varför?',
-  personality: 'Hur skulle dina närmaste beskriva dig som person? Är du direkt, humoristisk, introvert, omtänksam?',
-  preference: 'Föredrar du korta direkta svar eller detaljerade förklaringar? Formellt eller avslappnat språk?',
-  belief: 'Vad tror du starkt på som andra kanske inte håller med om? Politiskt, socialt, professionellt?',
-  habit: 'Hur inleder du vanligtvis ett mail – hälsning, direkt på sak, eller lite småprat först?',
-  goal: 'Vad vill du uppnå det närmaste året inom karriär, relationer eller personlig utveckling?',
-  communication: 'Hur anpassar du tonen beroende på om det är en nära vän, kollega eller okänd klient?',
-  knowledge: 'Vad är du expert på eller riktigt kunnig inom? Vad frågar folk dig om råd?',
-  experience: 'Berätta om en erfarenhet som har format hur du kommunicerar eller tänker idag.'
-};
-
-const CAT_PLACEHOLDERS_EN = {
-  value: 'What matters most to you in life? E.g. honesty, loyalty, freedom, family, career – and why?',
-  personality: 'How would people close to you describe you? Direct, humorous, introverted, caring?',
-  preference: 'Do you prefer short direct answers or detailed explanations? Formal or casual language?',
-  belief: 'What do you strongly believe in that others might disagree with? Politically, socially, professionally?',
-  habit: 'How do you typically start an email – with a greeting, straight to the point, or some small talk first?',
-  goal: 'What do you want to achieve in the next year in career, relationships or personal growth?',
-  communication: 'How do you adjust your tone depending on whether it is a close friend, colleague or unknown client?',
-  knowledge: 'What are you an expert in or really knowledgeable about? What do people ask your advice on?',
-  experience: 'Tell about an experience that has shaped how you communicate or think today.'
-};
-
-let currentCat = 'value';
-
-function getCatLabels() { return currentLang === 'sv-SE' ? CAT_LABELS_SV : CAT_LABELS_EN; }
-function getCatPlaceholders() { return currentLang === 'sv-SE' ? CAT_PLACEHOLDERS_SV : CAT_PLACEHOLDERS_EN; }
-
-function updateCatPlaceholder() {
-  const ta = document.getElementById('mem-content');
-  if (ta) ta.placeholder = getCatPlaceholders()[currentCat] || '';
-}
-
-function initCategories() {
-  const labels = getCatLabels();
-  document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${labels[c]}</button>`).join('');
-  updateCatPlaceholder();
-}
-function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); updateCatPlaceholder(); }
-
-async function addMemory() {
-  const content = document.getElementById('mem-content').value.trim();
-  const summary = document.getElementById('mem-summary').value.trim();
-  if (!content) return;
-  if (!currentUser) return alert(t('login_required'));
-  const token = await getToken();
-  const btn = document.querySelector('[onclick="addMemory()"]');
-  btn.textContent = '...'; btn.disabled = true;
-  const r = await fetch(`${SUPA_URL}/rest/v1/memories`, {
-    method: 'POST', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
-    body: JSON.stringify({ user_id: getUserId(), content, summary: summary || content.slice(0,60), category: currentCat, tier: 'full', confidence: 1.0, source: 'manual_training', activation_weight: 1.0 })
-  });
-  btn.textContent = t('mem_add_btn'); btn.disabled = false;
-  if (r.ok) { document.getElementById('mem-content').value = ''; document.getElementById('mem-summary').value = ''; loadMemories(); }
-}
-
-async function loadMemories() {
-  if (!currentUser) return;
-  const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${getUserId()}&order=created_at.desc`, { headers: getHeaders(token) });
-  const data = await r.json();
-  const labels = getCatLabels();
-  document.getElementById('mem-list').innerHTML = Array.isArray(data) && data.length
-    ? data.map(m => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary||''}</div><div class="mem-text">${m.content||''}</div></div><span class="mem-cat-badge">${labels[m.category]||m.category}</span><button class="del-btn" onclick="deleteMemory('${m.id}')">×</button></div>`).join('')
-    : `<div class="empty">${t('empty_memories')}</div>`;
-}
-
-async function deleteMemory(id) {
-  const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/memories?id=eq.${id}`, { method: 'DELETE', headers: getHeaders(token) });
-  loadMemories();
-}
-
-// ── RELATIONSHIPS ─────────────────────────────────────────
-async function loadRelationships() {
-  const uid = getUserId(); const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
-  const data = await r.json();
-  const list = document.getElementById('rel-list');
-  if (!data.length) { list.innerHTML=`<div class="empty">${t('empty_contacts')}</div>`; return; }
-  list.innerHTML = data.map(rel => {
-    const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-    const trust = rel.trust_level||0;
-    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
-  }).join('');
-}
-
-async function addRelationship() {
-  const name = document.getElementById('rel-name').value.trim();
-  const email = document.getElementById('rel-email').value.trim();
-  const style = document.getElementById('rel-style').value.trim();
-  const trust = parseInt(document.getElementById('rel-trust').value)||5;
-  const context = document.getElementById('rel-context').value.trim();
-  if (!name||!email) return;
-  const uid = getUserId(); const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
-  ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
-  loadRelationships();
-}
-
-// ── MIC ───────────────────────────────────────────────────
-let recognition = null;
-let isRecording = false;
-
-function toggleMic() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert(t('mic_error')); return; }
-  if (isRecording) { recognition.stop(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = currentLang;
-  const btn = document.getElementById('mic-btn');
-  let finalTranscript = document.getElementById('mem-content').value;
-  recognition.onstart = () => { isRecording = true; btn.textContent = t('mic_stop'); btn.style.borderColor = '#f87171'; btn.style.color = '#f87171'; };
-  recognition.onresult = (e) => {
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) { finalTranscript += e.results[i][0].transcript + ' '; }
-      else { interim = e.results[i][0].transcript; }
-    }
-    document.getElementById('mem-content').value = finalTranscript + interim;
-  };
-  recognition.onend = () => { isRecording = false; btn.textContent = t('mic_btn'); btn.style.borderColor = '#2a3a5a'; btn.style.color = '#93c5fd'; };
-  recognition.start();
-}
-
-// ── SCROLL HINT ───────────────────────────────────────────
-function updateScrollHint() {
-  const sh = document.getElementById('scroll-hint');
-  const isLanding = document.getElementById('page-landing').classList.contains('active');
-  if (!isLanding) { sh.style.display = 'none'; return; }
-  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  if (scrollable <= 0 || window.scrollY >= scrollable - 40) { sh.style.display = 'none'; } else { sh.style.display = 'block'; }
-}
-window.addEventListener('scroll', updateScrollHint);
-
-// ── INIT ──────────────────────────────────────────────────
-initLang();
-initCategories();
-document.addEventListener('DOMContentLoaded', () => { init(); setTimeout(updateScrollHint, 100); });
-</script>
-</body>
-</html>
