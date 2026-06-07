@@ -655,6 +655,8 @@ async function deleteMemory(id) {
 }
 
 // ── RELATIONSHIPS ─────────────────────────────────────────
+let editingRelId = null;
+
 async function loadRelationships() {
   const uid = getUserId(); const token = await getToken();
   const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
@@ -665,8 +667,58 @@ async function loadRelationships() {
     const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
     const trust = rel.trust_level||0;
     const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="editRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
   }).join('');
+}
+
+function editRelationship(id) {
+  const rel = relData?.find(r => r.id === id);
+  if (!rel) { loadRelationshipsData(id); return; }
+  fillRelForm(rel);
+}
+
+async function loadRelationshipsData(editId) {
+  const uid = getUserId(); const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&id=eq.${editId}`, { headers: getHeaders(token) });
+  const data = await r.json();
+  if (data.length) fillRelForm(data[0]);
+}
+
+let relData = [];
+
+async function loadRelationships() {
+  const uid = getUserId(); const token = await getToken();
+  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
+  relData = await r.json();
+  const list = document.getElementById('rel-list');
+  if (!relData.length) { list.innerHTML=`<div class="empty">${t('empty_contacts')}</div>`; return; }
+  list.innerHTML = relData.map(rel => {
+    const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const trust = rel.trust_level||0;
+    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="fillRelForm(relData.find(x=>x.id==='${rel.id}'))" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
+  }).join('');
+}
+
+function fillRelForm(rel) {
+  if (!rel) return;
+  editingRelId = rel.id;
+  document.getElementById('rel-name').value = rel.contact_name || '';
+  document.getElementById('rel-email').value = rel.contact_email || '';
+  document.getElementById('rel-style').value = rel.communication_style || '';
+  document.getElementById('rel-trust').value = rel.trust_level || 5;
+  document.getElementById('rel-context').value = rel.important_context || '';
+  const btn = document.querySelector('[onclick="addRelationship()"]');
+  btn.textContent = currentLang === 'sv-SE' ? '💾 Spara ändringar' : '💾 Save changes';
+  btn.style.background = '#1a2a1a';
+  document.getElementById('rel-name').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function deleteRelationship(id) {
+  if (!confirm(currentLang === 'sv-SE' ? 'Ta bort kontakten?' : 'Delete contact?')) return;
+  const token = await getToken();
+  await fetch(`${SUPA_URL}/rest/v1/relationships?id=eq.${id}`, { method: 'DELETE', headers: getHeaders(token) });
+  loadRelationships();
 }
 
 async function addRelationship() {
@@ -677,7 +729,15 @@ async function addRelationship() {
   const context = document.getElementById('rel-context').value.trim();
   if (!name||!email) return;
   const uid = getUserId(); const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+  if (editingRelId) {
+    await fetch(`${SUPA_URL}/rest/v1/relationships?id=eq.${editingRelId}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+    editingRelId = null;
+    const btn = document.querySelector('[onclick="addRelationship()"]');
+    btn.textContent = t('add_contact_btn');
+    btn.style.background = '#a78bfa';
+  } else {
+    await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
+  }
   ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
   loadRelationships();
 }
