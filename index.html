@@ -116,6 +116,11 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 .alt-btn:hover { background: #2a1f4a; }
 .alt-row { display: flex; gap: 8px; margin-bottom: 10px; }
 
+/* Rel action buttons */
+.rel-action-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 6px 8px; border-radius: 6px; transition: background 0.15s; }
+.rel-action-btn:hover { background: #2a2a2a; }
+.rel-delete-btn:hover { background: #2a0a0a; }
+
 /* Scroll hint */
 .scroll-hint { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #a78bfa; font-size: 28px; animation: bounce 1.5s infinite; z-index: 100; pointer-events: none; }
 @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
@@ -696,7 +701,7 @@ async function loadRelationships() {
     const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
     const trust = rel.trust_level||0;
     const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="fillRelForm(relData.find(x=>x.id==='${rel.id}'))" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;font-size:14px;padding:4px 8px;" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="fillRelForm(relData.find(x=>x.id==='${rel.id}'))" class="rel-action-btn" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" class="rel-action-btn rel-delete-btn" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
   }).join('');
 }
 
@@ -715,7 +720,6 @@ function fillRelForm(rel) {
 }
 
 async function deleteRelationship(id) {
-  if (!confirm(currentLang === 'sv-SE' ? 'Ta bort kontakten?' : 'Delete contact?')) return;
   const token = await getToken();
   await fetch(`${SUPA_URL}/rest/v1/relationships?id=eq.${id}`, { method: 'DELETE', headers: getHeaders(token) });
   loadRelationships();
