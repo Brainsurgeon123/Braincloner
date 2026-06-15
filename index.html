@@ -81,21 +81,10 @@ textarea:focus { outline: none; border-color: #a78bfa; }
 .empty { text-align: center; padding: 60px; color: #444; font-size: 14px; }
 
 /* Memory */
-.cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.cat-btn { padding: 6px 14px; border-radius: 20px; border: 0.5px solid #2a2a2a; background: #111; color: #666; cursor: pointer; font-size: 12px; transition: all 0.15s; }
-.cat-btn.active { background: #2a1f4a; color: #a78bfa; border-color: #5a3fa0; }
 .input-group { margin-bottom: 16px; }
 .input-label { font-size: 12px; color: #666; margin-bottom: 6px; font-weight: 500; }
 input[type=text] { width: 100%; background: #0d0d0d; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #e0e0e0; font-family: inherit; }
 input[type=text]:focus { outline: none; border-color: #a78bfa; }
-.mem-list { margin-top: 20px; }
-.mem-item { background: #111; border: 0.5px solid #222; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.mem-content { flex: 1; }
-.mem-summary { font-size: 12px; font-weight: 600; color: #a78bfa; margin-bottom: 4px; }
-.mem-text { font-size: 12px; color: #666; line-height: 1.5; }
-.mem-cat-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a1a1a; color: #555; white-space: nowrap; }
-.del-btn { background: none; border: none; cursor: pointer; color: #333; font-size: 18px; line-height: 1; padding: 0; }
-.del-btn:hover { color: #f87171; }
 
 /* Relations */
 .rel-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
@@ -116,64 +105,120 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
 .alt-btn:hover { background: #2a1f4a; }
 .alt-row { display: flex; gap: 8px; margin-bottom: 10px; }
 
-/* Rel action buttons */
-.rel-action-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 6px 8px; border-radius: 6px; transition: background 0.15s; }
-.rel-action-btn:hover { background: #2a2a2a; }
-.rel-delete-btn:hover { background: #2a0a0a; }
+/* Quiz Dashboard */
+.quiz-wrap { padding: 0; }
+.total-bar-wrap { background: #111; border-radius: 12px; border: 0.5px solid #222; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+.total-bar-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.total-bar-label { font-size: 13px; color: #666; }
+.total-bar-num { font-size: 15px; font-weight: 500; color: #fff; }
+.total-bar-track { height: 8px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
+.total-bar-fill { height: 100%; border-radius: 4px; background: #a78bfa; transition: width 0.5s ease; }
+.cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cat-card { background: #111; border: 0.5px solid #222; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s; }
+.cat-card.done { border-color: #4ade80; }
+.cat-card.started { border-color: #a78bfa; }
+.cat-card-top { display: flex; align-items: center; gap: 10px; }
+.cat-icon { font-size: 20px; }
+.cat-name { font-size: 14px; font-weight: 500; color: #fff; }
+.cat-status { font-size: 11px; color: #555; margin-top: 1px; }
+.ring-wrap { margin-left: auto; position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #1a1a1a; stroke-width: 4; }
+.ring-fg { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: #888; }
+.cat-btn { width: 100%; padding: 8px; border-radius: 8px; border: 0.5px solid #a78bfa; background: transparent; color: #a78bfa; font-size: 13px; cursor: pointer; transition: background 0.15s; }
+.cat-btn:hover { background: rgba(167,139,250,.1); }
+.cat-btn.done-btn { border-color: #4ade80; color: #4ade80; }
+.mem-section { margin-top: .75rem; border-top: 0.5px solid #222; padding-top: .75rem; }
+.mem-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 12px; color: #666; }
+.mem-toggle:hover { color: #e0e0e0; }
+.mem-content-box { margin-top: 8px; font-size: 12px; color: #666; line-height: 1.6; display: none; }
+.mem-content-box.open { display: block; }
+.mem-edit-btn { font-size: 11px; color: #a78bfa; cursor: pointer; background: none; border: none; padding: 4px 0; margin-top: 6px; display: block; }
+
+/* Quiz Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.modal { background: #111; border: 0.5px solid #222; border-radius: 12px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; position: relative; }
+.modal-close { position: absolute; top: 14px; right: 14px; background: #1a1a1a; border: 0.5px solid #333; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #888; font-size: 16px; z-index: 10; transition: all 0.15s; }
+.modal-close:hover { background: rgba(248,113,113,.15); color: #f87171; border-color: #f87171; }
+.modal-header { padding: 1.25rem 3rem 0 1.25rem; }
+.modal-title { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+.modal-sub { font-size: 13px; color: #666; }
+.modal-body { padding: 1.25rem; }
+.modal-footer { padding: 0 1.25rem 1.25rem; display: flex; gap: 8px; }
+.btn-primary { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #a78bfa; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-secondary { padding: 10px 20px; border-radius: 8px; border: 0.5px solid #333; background: transparent; color: #888; font-size: 14px; cursor: pointer; }
+.btn-secondary:hover { background: #1a1a1a; }
+.btn-secondary:disabled { opacity: .3; cursor: default; }
+.confirm-info { background: #0d0d0d; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+.confirm-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.confirm-label { color: #666; }
+.confirm-val { color: #fff; font-weight: 500; }
+.q-progress { margin-bottom: 1rem; }
+.q-progress-top { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 6px; }
+.q-track { height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+.q-fill { height: 100%; background: #a78bfa; border-radius: 2px; transition: width 0.3s; }
+.q-text { font-size: 15px; color: #fff; line-height: 1.5; margin-bottom: 1.25rem; font-weight: 500; }
+.yn-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+.yn-btn { flex: 1; padding: 16px; border-radius: 8px; border: 0.5px solid #333; background: transparent; font-size: 15px; cursor: pointer; transition: all 0.15s; color: #e0e0e0; }
+.yn-btn:hover { background: #1a1a1a; }
+.yn-btn.yes-sel { background: rgba(74,222,128,.15) !important; border-color: #4ade80 !important; color: #4ade80 !important; }
+.yn-btn.no-sel { background: rgba(248,113,113,.15) !important; border-color: #f87171 !important; color: #f87171 !important; }
+.write-area { width: 100%; padding: 10px 12px; border-radius: 8px; border: 0.5px solid #2a2a2a; background: #0d0d0d; color: #e0e0e0; font-size: 14px; font-family: inherit; resize: vertical; min-height: 90px; margin-bottom: 1rem; }
+.write-area:focus { outline: none; border-color: #a78bfa; }
+.advance-hint { font-size: 11px; color: #444; text-align: center; margin-bottom: .5rem; }
+.done-wrap { text-align: center; padding: 2rem 1rem; }
+.done-icon { font-size: 48px; margin-bottom: 1rem; }
+.done-title { font-size: 18px; font-weight: 500; color: #fff; margin-bottom: 8px; }
+.done-sub { font-size: 14px; color: #666; margin-bottom: 1.5rem; line-height: 1.6; }
+.loading-spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #222; border-top-color: #a78bfa; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Scroll hint */
 .scroll-hint { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #a78bfa; font-size: 28px; animation: bounce 1.5s infinite; z-index: 100; pointer-events: none; }
 @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
 
-/* Mobil */
+/* Mobile */
 @media (max-width: 640px) {
   nav { padding: 10px 12px; }
-  .nav-right { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; flex: 1; min-width: 0; }
+  .nav-right { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; flex: 1; min-width: 0; }
   .nav-right::-webkit-scrollbar { display: none; }
   .nav-links { flex-wrap: nowrap; }
   .nav-btn { padding: 6px 10px; font-size: 12px; white-space: nowrap; }
-  #nav-logged-out button, .user-pill, .logout-btn { white-space: nowrap; flex-shrink: 0; }
   .hero { padding: 24px 16px 32px; }
-  .hero h1 { font-size: 36px; }
-  .hero p { font-size: 15px; }
-  .page { padding: 24px 16px; }
-  .hero-btn { width: 100%; }
+  .hero h1 { font-size: 32px; }
+  .page { padding: 20px 16px; }
   .features { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .cat-grid { grid-template-columns: 1fr 1fr; }
   .scroll-hint { display: block; }
 }
 </style>
 </head>
 <body>
-
 <div id="app">
   <nav>
     <div class="logo">Brain<span>Cloner</span></div>
     <div class="nav-right">
       <div class="nav-links" id="nav-links">
-        <button class="nav-btn active" onclick="showPage('landing', this)" data-t="nav_home">Hem</button>
-        <button class="nav-btn" onclick="showPage('approvals', this)" data-t="nav_approvals">Godkännanden</button>
-        <button class="nav-btn" onclick="showPage('memories', this)" data-t="nav_memories">Minnesträning</button>
-        <button class="nav-btn" onclick="showPage('relationships', this)" data-t="nav_relations">Relationer</button>
+        <button class="nav-btn active" onclick="showPage('landing',this)">Hem</button>
+        <button class="nav-btn" onclick="showPage('approvals',this)">Godkännanden</button>
+        <button class="nav-btn" onclick="showPage('memories',this)">Minnesträning</button>
+        <button class="nav-btn" onclick="showPage('relationships',this)">Relationer</button>
       </div>
-
-      <!-- Single lang picker, always visible -->
       <div class="lang-picker" id="lang-picker">
         <button class="lang-btn" onclick="toggleLangDropdown()">
-          <span id="lang-flag">🇬🇧</span>
-          <span id="lang-label">EN</span>
-          <span>▾</span>
+          <span id="lang-flag">🇸🇪</span><span id="lang-label">SV</span><span>▾</span>
         </button>
         <div class="lang-dropdown" id="lang-dropdown">
-          <div class="lang-option" onclick="setLang('en-US','🇬🇧','EN')">🇬🇧 English</div>
           <div class="lang-option" onclick="setLang('sv-SE','🇸🇪','SV')">🇸🇪 Svenska</div>
+          <div class="lang-option" onclick="setLang('en-US','🇬🇧','EN')">🇬🇧 English</div>
         </div>
       </div>
-
       <div id="nav-logged-out">
         <button onclick="loginWithGoogle()" style="padding:8px 16px;font-size:13px;border-radius:8px;background:#fff;color:#333;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;" alt="G">
-          <span data-t="login">Logga in</span>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:16px;height:16px;">
+          <span>Logga in</span>
         </button>
       </div>
       <div id="nav-logged-in" style="display:none;align-items:center;gap:8px;">
@@ -181,7 +226,7 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
           <div class="user-avatar" id="user-initials">?</div>
           <span id="user-name"></span>
         </div>
-        <button class="logout-btn" onclick="logout()" data-t="logout">Logga ut</button>
+        <button class="logout-btn" onclick="logout()">Logga ut</button>
       </div>
     </div>
   </nav>
@@ -189,71 +234,72 @@ input[type=text]:focus { outline: none; border-color: #a78bfa; }
   <!-- LANDING -->
   <div class="page active" id="page-landing">
     <div class="hero">
-      <h1 data-t="hero_title">Klona din <span>hjärna</span><br>slipp svara på mail</h1>
-      <p data-t="hero_sub">AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
-      <button class="hero-btn" onclick="showPage('approvals', document.querySelectorAll('.nav-btn')[1])" data-t="hero_btn">Öppna dashboard</button>
+      <h1>Klona din <span>hjärna</span><br>slipp svara på mail</h1>
+      <p>AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.</p>
+      <button class="hero-btn" onclick="showPage('approvals',document.querySelectorAll('.nav-btn')[1])">Öppna dashboard</button>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl" data-t="stat_pending">Väntande svar</div></div>
-      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl" data-t="stat_memories">Minnen inlärda</div></div>
-      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl" data-t="stat_sent">Skickade svar</div></div>
+      <div class="stat-card"><div class="num" id="hero-pending">-</div><div class="lbl">Väntande svar</div></div>
+      <div class="stat-card"><div class="num" id="hero-memories">-</div><div class="lbl">Minnen inlärda</div></div>
+      <div class="stat-card"><div class="num" id="hero-sent">-</div><div class="lbl">Skickade svar</div></div>
     </div>
     <div class="features">
-      <div class="feature"><div class="feature-icon">🧠</div><h3 data-t="f1_title">Levande minne</h3><p data-t="f1_desc">Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
-      <div class="feature"><div class="feature-icon">🔒</div><h3 data-t="f2_title">Du har kontroll</h3><p data-t="f2_desc">Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
-      <div class="feature"><div class="feature-icon">⚡</div><h3 data-t="f3_title">Automatiserat</h3><p data-t="f3_desc">Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
+      <div class="feature"><div class="feature-icon">🧠</div><h3>Levande minne</h3><p>Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.</p></div>
+      <div class="feature"><div class="feature-icon">🔒</div><h3>Du har kontroll</h3><p>Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.</p></div>
+      <div class="feature"><div class="feature-icon">⚡</div><h3>Automatiserat</h3><p>Kopplat direkt till Gmail – inga manuella steg behövs.</p></div>
     </div>
   </div>
 
   <!-- APPROVALS -->
   <div class="page" id="page-approvals">
     <div class="page-header">
-      <div><div class="page-title" data-t="nav_approvals">Godkännanden</div><div class="page-sub" data-t="approvals_sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
+      <div><div class="page-title">Godkännanden</div><div class="page-sub">Granska och godkänn AI-klonens föreslagna svar</div></div>
       <button class="btn btn-refresh" onclick="loadApprovals()">↻</button>
     </div>
     <div class="stats-mini">
-      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l" data-t="filter_pending">Väntande</div></div>
-      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l" data-t="filter_approved">Godkända</div></div>
-      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l" data-t="filter_rejected">Avvisade</div></div>
+      <div class="stat-mini" onclick="setFilter('pending')" id="filter-pending"><div class="n" id="cnt-p">-</div><div class="l">Väntande</div></div>
+      <div class="stat-mini" onclick="setFilter('approved')" id="filter-approved"><div class="n" id="cnt-a">-</div><div class="l">Godkända</div></div>
+      <div class="stat-mini" onclick="setFilter('rejected')" id="filter-rejected"><div class="n" id="cnt-r">-</div><div class="l">Avvisade</div></div>
     </div>
     <div id="approvals-list"></div>
   </div>
 
-  <!-- MEMORIES -->
+  <!-- MEMORIES / QUIZ -->
   <div class="page" id="page-memories">
-    <div class="page-header"><div><div class="page-title" data-t="nav_memories">Minnesträning</div><div class="page-sub" data-t="memories_sub">Mata in information för att förbättra klonen</div></div></div>
-    <div class="cat-grid" id="cat-grid"></div>
-    <div class="input-group">
-      <div class="input-label" style="display:flex;justify-content:space-between;align-items:center;">
-        <span data-t="mem_content_label">Innehåll</span>
-        <button id="mic-btn" onclick="toggleMic()" style="background:#1a1a2a;border:0.5px solid #2a3a5a;border-radius:8px;color:#93c5fd;font-size:12px;padding:4px 10px;cursor:pointer;" data-t="mic_btn">🎤 Tala in</button>
+    <div class="page-header"><div><div class="page-title">Minnesträning</div><div class="page-sub">Slutför quiz för varje kategori för att träna din AI-klon</div></div></div>
+    <div class="quiz-wrap">
+      <div class="total-bar-wrap">
+        <div class="total-bar-top"><span class="total-bar-label">Total progress</span><span class="total-bar-num" id="total-num">0 / 900 frågor</span></div>
+        <div class="total-bar-track"><div class="total-bar-fill" id="total-fill" style="width:0%"></div></div>
       </div>
-      <textarea id="mem-content" rows="3"></textarea>
+      <div class="cat-grid" id="cat-grid"></div>
     </div>
-    <div class="input-group"><div class="input-label" data-t="mem_summary_label">Kort sammanfattning</div><input type="text" id="mem-summary" data-t-placeholder="mem_summary_placeholder" /></div>
-    <button class="btn btn-approve" style="flex:0;width:100%;padding:12px;" onclick="addMemory()" data-t="mem_add_btn">+ Lägg till minne</button>
-    <div class="mem-list" id="mem-list"></div>
   </div>
 
   <!-- RELATIONSHIPS -->
   <div class="page" id="page-relationships">
-    <div class="page-header"><div><div class="page-title" data-t="nav_relations">Relationer</div><div class="page-sub" data-t="relations_sub">Hantera kontakter och trust-nivåer</div></div></div>
+    <div class="page-header"><div><div class="page-title">Relationer</div><div class="page-sub">Hantera kontakter och trust-nivåer</div></div></div>
     <div class="add-rel-form">
-      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;" data-t="add_contact">Lägg till kontakt</div>
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:16px;">Lägg till kontakt</div>
       <div class="form-grid">
-        <div class="input-group"><div class="input-label" data-t="rel_name">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson" /></div>
-        <div class="input-group"><div class="input-label">Email</div><input type="text" id="rel-email" placeholder="anna@example.com" /></div>
-        <div class="input-group"><div class="input-label" data-t="rel_style">Kommunikationsstil</div><input type="text" id="rel-style" data-t-placeholder="rel_style_ph" /></div>
-        <div class="input-group"><div class="input-label" data-t="rel_trust">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5" /></div>
+        <div class="input-group"><div class="input-label">Namn</div><input type="text" id="rel-name" placeholder="Anna Svensson"/></div>
+        <div class="input-group"><div class="input-label">Email</div><input type="text" id="rel-email" placeholder="anna@example.com"/></div>
+        <div class="input-group"><div class="input-label">Kommunikationsstil</div><input type="text" id="rel-style" placeholder="Formell, kort, direkt..."/></div>
+        <div class="input-group"><div class="input-label">Trust-nivå (1-10)</div><input type="text" id="rel-trust" placeholder="5"/></div>
       </div>
-      <div class="input-group"><div class="input-label" data-t="rel_context">Viktig kontext</div><input type="text" id="rel-context" data-t-placeholder="rel_context_ph" /></div>
-      <button class="add-btn" onclick="addRelationship()" data-t="add_contact_btn">Lägg till kontakt</button>
+      <div class="input-group"><div class="input-label">Viktig kontext</div><input type="text" id="rel-context" placeholder="Gammal vän, affärspartner, klient..."/></div>
+      <button class="add-btn" onclick="addRelationship()">Lägg till kontakt</button>
     </div>
     <div id="rel-list"></div>
   </div>
 </div>
 
 <div class="scroll-hint" id="scroll-hint">↓</div>
+
+<!-- QUIZ OVERLAY -->
+<div class="overlay" id="overlay" style="display:none">
+  <div class="modal" id="modal-content"></div>
+</div>
 
 <script>
 const SUPA_URL = "https://kpmhgkznqntkyedpdevs.supabase.co";
@@ -264,129 +310,7 @@ const sb = createClient(SUPA_URL, SUPA_KEY);
 let currentUser = null;
 let currentFilter = 'pending';
 let approvalsData = [];
-
-// ── TRANSLATIONS ──────────────────────────────────────────
-const T = {
-  'sv-SE': {
-    nav_home: 'Hem', nav_approvals: 'Godkännanden', nav_memories: 'Minnesträning', nav_relations: 'Relationer',
-    login: 'Logga in', logout: 'Logga ut',
-    hero_title: 'Klona din <span>hjärna</span><br>slipp svara på mail',
-    hero_sub: 'AI som lär sig exakt hur du kommunicerar och svarar på mail åt dig – i din stil, med dina värderingar.',
-    hero_btn: 'Öppna dashboard',
-    stat_pending: 'Väntande svar', stat_memories: 'Minnen inlärda', stat_sent: 'Skickade svar',
-    f1_title: 'Levande minne', f1_desc: 'Systemet lär sig dina värderingar, kommunikationsstil och preferenser över tid.',
-    f2_title: 'Du har kontroll', f2_desc: 'Alla svar kräver ditt godkännande tills du litar fullt ut på klonen.',
-    f3_title: 'Automatiserat', f3_desc: 'Kopplat direkt till Gmail – inga manuella steg behövs.',
-    approvals_sub: 'Granska och godkänn AI-klonens föreslagna svar',
-    filter_pending: 'Väntande', filter_approved: 'Godkända', filter_rejected: 'Avvisade',
-    memories_sub: 'Mata in information för att förbättra klonen',
-    mem_content_label: 'Innehåll', mic_btn: '🎤 Tala in',
-    mem_placeholder: 'Beskriv något om personens värderingar, vanor, kommunikationsstil...',
-    mem_summary_label: 'Kort sammanfattning', mem_summary_placeholder: 'En mening som beskriver minnet',
-    mem_add_btn: '+ Lägg till minne',
-    relations_sub: 'Hantera kontakter och trust-nivåer', add_contact: 'Lägg till kontakt',
-    rel_name: 'Namn', rel_style: 'Kommunikationsstil', rel_style_ph: 'Formell, kort, direkt...',
-    rel_trust: 'Trust-nivå (1-10)', rel_context: 'Viktig kontext', rel_context_ph: 'Gammal vän, affärspartner, klient...',
-    add_contact_btn: 'Lägg till kontakt',
-    empty_approvals: 'Inga väntande svar just nu', empty_approved: 'Inga godkända svar ännu',
-    empty_rejected: 'Inga avvisade svar', empty_memories: 'Inga minnen ännu', empty_contacts: 'Inga kontakter ännu',
-    approve_btn: '✓ Godkänn och skicka', reject_btn: '✗ Avvisa',
-    status_sent: 'Skickat', status_approved: 'Godkänt – skickas snart', status_pending: 'Väntar', status_rejected: 'Avvisad',
-    response_label: 'Föreslagen svar', sent_label: 'Skickat svar',
-    login_required: 'Logga in för att se dina godkännanden',
-    last_active: 'Senast aktiv', never: 'Aldrig', style_label: 'Stil', context_label: 'Kontext',
-    mic_stop: '🔴 Stoppa', mic_error: 'Din webbläsare stödjer inte röstinmatning. Prova Chrome!'
-  },
-  'en-US': {
-    nav_home: 'Home', nav_approvals: 'Approvals', nav_memories: 'Memory Training', nav_relations: 'Relationships',
-    login: 'Sign in', logout: 'Sign out',
-    hero_title: 'Clone your <span>brain</span><br>skip answering emails',
-    hero_sub: 'AI that learns exactly how you communicate and replies to emails for you – in your style, with your values.',
-    hero_btn: 'Open dashboard',
-    stat_pending: 'Pending replies', stat_memories: 'Memories learned', stat_sent: 'Sent replies',
-    f1_title: 'Living memory', f1_desc: 'The system learns your values, communication style and preferences over time.',
-    f2_title: 'You stay in control', f2_desc: 'All replies require your approval until you fully trust the clone.',
-    f3_title: 'Automated', f3_desc: 'Connected directly to Gmail – no manual steps needed.',
-    approvals_sub: 'Review and approve the AI clone\'s suggested replies',
-    filter_pending: 'Pending', filter_approved: 'Approved', filter_rejected: 'Rejected',
-    memories_sub: 'Feed information to improve the clone',
-    mem_content_label: 'Content', mic_btn: '🎤 Speak',
-    mem_placeholder: 'Describe something about the person\'s values, habits, communication style...',
-    mem_summary_label: 'Short summary', mem_summary_placeholder: 'One sentence describing the memory',
-    mem_add_btn: '+ Add memory',
-    relations_sub: 'Manage contacts and trust levels', add_contact: 'Add contact',
-    rel_name: 'Name', rel_style: 'Communication style', rel_style_ph: 'Formal, brief, direct...',
-    rel_trust: 'Trust level (1-10)', rel_context: 'Important context', rel_context_ph: 'Old friend, business partner, client...',
-    add_contact_btn: 'Add contact',
-    empty_approvals: 'No pending replies right now', empty_approved: 'No approved replies yet',
-    empty_rejected: 'No rejected replies', empty_memories: 'No memories yet', empty_contacts: 'No contacts yet',
-    approve_btn: '✓ Approve & send', reject_btn: '✗ Reject',
-    status_sent: 'Sent', status_approved: 'Approved – sending soon', status_pending: 'Pending', status_rejected: 'Rejected',
-    response_label: 'Suggested reply', sent_label: 'Sent reply',
-    login_required: 'Sign in to see your approvals',
-    last_active: 'Last active', never: 'Never', style_label: 'Style', context_label: 'Context',
-    mic_stop: '🔴 Stop', mic_error: 'Your browser does not support voice input. Try Chrome!'
-  }
-};
-
-let currentLang = localStorage.getItem('braincloner_lang') || 'en-US';
-
-function t(key) { return T[currentLang]?.[key] || T['en-US'][key] || key; }
-
-function applyTranslations() {
-  document.querySelectorAll('[data-t]').forEach(el => {
-    const key = el.getAttribute('data-t');
-    const val = t(key);
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = val; }
-    else { el.innerHTML = val; }
-  });
-  document.querySelectorAll('[data-t-placeholder]').forEach(el => {
-    el.placeholder = t(el.getAttribute('data-t-placeholder'));
-  });
-  // Update mic btn text if not recording
-  const micBtn = document.getElementById('mic-btn');
-  if (micBtn && !isRecording) micBtn.textContent = t('mic_btn');
-  // Re-init categories with translated labels
-  initCategories();
-  updateCatPlaceholder();
-}
-
-function initLang() {
-  const flag = currentLang === 'sv-SE' ? '🇸🇪' : '🇬🇧';
-  const label = currentLang === 'sv-SE' ? 'SV' : 'EN';
-  document.getElementById('lang-flag').textContent = flag;
-  document.getElementById('lang-label').textContent = label;
-  applyTranslations();
-}
-
-function toggleLangDropdown() {
-  document.getElementById('lang-dropdown').classList.toggle('open');
-}
-
-function setLang(lang, flag, label) {
-  currentLang = lang;
-  localStorage.setItem('braincloner_lang', lang);
-  document.getElementById('lang-flag').textContent = flag;
-  document.getElementById('lang-label').textContent = label;
-  document.getElementById('lang-dropdown').classList.remove('open');
-  if (recognition && isRecording) recognition.lang = lang;
-  applyTranslations();
-  // Re-render current page content
-  const activePage = document.querySelector('.page.active');
-  if (activePage) {
-    const id = activePage.id.replace('page-', '');
-    if (id === 'approvals') renderApprovals();
-    if (id === 'memories') loadMemories();
-    if (id === 'relationships') loadRelationships();
-    if (id === 'landing') loadStats();
-  }
-}
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.lang-picker')) {
-    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('open'));
-  }
-});
+let currentLang = localStorage.getItem('braincloner_lang') || 'sv-SE';
 
 // ── AUTH ──────────────────────────────────────────────────
 async function init() {
@@ -416,16 +340,13 @@ function showLogin() {
   currentUser = null;
   document.getElementById('nav-logged-out').style.display = 'block';
   document.getElementById('nav-logged-in').style.display = 'none';
-  ['hero-pending','hero-memories','hero-sent','cnt-p','cnt-a','cnt-r'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.textContent = '-';
-  });
 }
 
 function showApp() {
   document.getElementById('nav-logged-out').style.display = 'none';
   document.getElementById('nav-logged-in').style.display = 'flex';
   const name = currentUser?.user_metadata?.full_name || currentUser?.email || 'User';
-  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('user-name').textContent = name.split(' ')[0];
   document.getElementById('user-initials').textContent = initials;
   loadStats();
@@ -468,15 +389,14 @@ function showPage(p, btn) {
   if (btn) btn.classList.add('active');
   if (p === 'approvals') loadApprovals();
   if (p === 'relationships') loadRelationships();
-  if (p === 'memories') loadMemories();
+  if (p === 'memories') renderDashboard();
   if (p === 'landing') loadStats();
   window.scrollTo(0, 0);
-  setTimeout(updateScrollHint, 50);
 }
 
 async function loadStats() {
-  if (!currentUser) { ['hero-pending','hero-memories','hero-sent'].forEach(id => document.getElementById(id).textContent = '-'); return; }
-  const uid = getUserId(); const token = await getToken(); const h = getHeaders(token);
+  if (!currentUser) return;
+  const uid = getUserId(), token = await getToken(), h = getHeaders(token);
   const [r1, r2, r3] = await Promise.all([
     fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&status=eq.pending`, { headers: h }),
     fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${uid}`, { headers: h }),
@@ -488,6 +408,18 @@ async function loadStats() {
   document.getElementById('hero-sent').textContent = Array.isArray(s) ? s.length : '-';
 }
 
+// ── LANG ─────────────────────────────────────────────────
+function toggleLangDropdown() { document.getElementById('lang-dropdown').classList.toggle('open'); }
+function setLang(lang, flag, label) {
+  currentLang = lang;
+  localStorage.setItem('braincloner_lang', lang);
+  document.getElementById('lang-flag').textContent = flag;
+  document.getElementById('lang-label').textContent = label;
+  document.getElementById('lang-dropdown').classList.remove('open');
+}
+document.addEventListener('click', e => { if (!e.target.closest('.lang-picker')) document.getElementById('lang-dropdown').classList.remove('open'); });
+
+// ── APPROVALS ─────────────────────────────────────────────
 function setFilter(filter) {
   currentFilter = filter;
   const colors = { pending: '#93c5fd', approved: '#4ade80', rejected: '#f87171' };
@@ -499,10 +431,10 @@ function setFilter(filter) {
 async function loadApprovals() {
   if (!currentUser) {
     ['cnt-p','cnt-a','cnt-r'].forEach(id => document.getElementById(id).textContent = '-');
-    document.getElementById('approvals-list').innerHTML = `<div class="empty">${t('login_required')}</div>`;
+    document.getElementById('approvals-list').innerHTML = '<div class="empty">Logga in för att se dina godkännanden</div>';
     return;
   }
-  const uid = getUserId(); const token = await getToken();
+  const uid = getUserId(), token = await getToken();
   const r = await fetch(`${SUPA_URL}/rest/v1/pending_approvals?user_id=eq.${uid}&order=created_at.desc`, { headers: getHeaders(token) });
   approvalsData = await r.json();
   document.getElementById('cnt-p').textContent = approvalsData.filter(a => a.status === 'pending').length;
@@ -514,9 +446,8 @@ async function loadApprovals() {
 function renderApprovals() {
   const list = document.getElementById('approvals-list');
   if (currentFilter === 'approved') {
-    const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent')
-      .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-    if (!approved.length) { list.innerHTML = `<div class="empty">${t('empty_approved')}</div>`; return; }
+    const approved = approvalsData.filter(a => a.status === 'approved' || a.status === 'sent').sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    if (!approved.length) { list.innerHTML = '<div class="empty">Inga godkända svar ännu</div>'; return; }
     list.innerHTML = approved.map(a => {
       const finalResponse = a.user_modification || a.proposed_action?.response || '';
       const original = a.proposed_action?.original_message || '';
@@ -524,23 +455,23 @@ function renderApprovals() {
       const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
       const date = new Date(a.created_at).toLocaleString();
       const statusColor = a.status === 'sent' ? '#4ade80' : '#a78bfa';
-      const statusText = a.status === 'sent' ? t('status_sent') : t('status_approved');
-      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${statusText}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">${t('sent_label')}</div><div class="response-preview">${finalResponse}</div></div>`;
+      const statusText = a.status === 'sent' ? 'Skickat' : 'Godkänt';
+      return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#111;color:${statusColor};border:0.5px solid ${statusColor};">${statusText}</span></div><div class="original-msg">${original.slice(0,200)}${original.length>200?'...':''}</div><div class="response-label">Skickat svar</div><div class="response-preview">${finalResponse}</div></div>`;
     }).join(''); return;
   }
   if (currentFilter === 'rejected') {
     const rejected = approvalsData.filter(a => a.status === 'rejected');
-    if (!rejected.length) { list.innerHTML = `<div class="empty">${t('empty_rejected')}</div>`; return; }
+    if (!rejected.length) { list.innerHTML = '<div class="empty">Inga avvisade svar</div>'; return; }
     list.innerHTML = rejected.map(a => {
       const proposed = a.proposed_action?.response || '';
       const senderMatch = (a.reasoning||'').match(/Avsändare: ([^|]+)/);
       const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
       const date = new Date(a.created_at).toLocaleString();
-      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">${t('status_rejected')}</span></div><div class="response-preview">${proposed}</div></div>`;
+      return `<div class="card" style="opacity:0.6;"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a0a0a;color:#f87171;border:0.5px solid #5a2d2d;">Avvisad</span></div><div class="response-preview">${proposed}</div></div>`;
     }).join(''); return;
   }
   const pending = approvalsData.filter(a => a.status === 'pending');
-  if (!pending.length) { list.innerHTML = `<div class="empty">${t('empty_approvals')}</div>`; return; }
+  if (!pending.length) { list.innerHTML = '<div class="empty">Inga väntande svar just nu</div>'; return; }
   list.innerHTML = pending.map(a => {
     const proposed = a.proposed_action?.response || '';
     const alt2 = a.proposed_action?.alternative2 || '';
@@ -549,12 +480,8 @@ function renderApprovals() {
     const sender = senderMatch ? senderMatch[1].trim() : 'Unknown';
     const date = new Date(a.created_at).toLocaleString();
     const hasAlt = alt2 && alt2.trim().length > 0;
-    const altButtons = hasAlt ? `
-      <div class="alt-row">
-        <button class="alt-btn selected" id="alt1-${a.id}" onclick="selectAlt('${a.id}', 1)">${currentLang === 'sv-SE' ? 'Alternativ 1' : 'Option 1'}</button>
-        <button class="alt-btn" id="alt2-${a.id}" onclick="selectAlt('${a.id}', 2)">${currentLang === 'sv-SE' ? 'Alternativ 2' : 'Option 2'}</button>
-      </div>` : '';
-    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a2000;color:#fbbf24;">${t('status_pending')}</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">${t('response_label')}</div>${altButtons}<div class="response-preview" id="preview-${a.id}">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">${t('approve_btn')}</button><button class="btn btn-reject" onclick="reject('${a.id}')">${t('reject_btn')}</button></div></div>`;
+    const altButtons = hasAlt ? `<div class="alt-row"><button class="alt-btn selected" id="alt1-${a.id}" onclick="selectAlt('${a.id}',1)">Alternativ 1</button><button class="alt-btn" id="alt2-${a.id}" onclick="selectAlt('${a.id}',2)">Alternativ 2</button></div>` : '';
+    return `<div class="card"><div class="card-header"><div><div class="sender">${sender}</div><div class="date-txt">${date}</div></div><span class="badge" style="background:#2a2000;color:#fbbf24;">Väntar</span></div><div class="original-msg">${original.slice(0,250)}${original.length>250?'...':''}</div><div class="response-label">Föreslagen svar</div>${altButtons}<div class="response-preview" id="preview-${a.id}">${proposed}</div><textarea id="edit-${a.id}">${proposed}</textarea><div class="btn-row"><button class="btn btn-approve" onclick="approve('${a.id}')">✓ Godkänn och skicka</button><button class="btn btn-reject" onclick="reject('${a.id}')">✗ Avvisa</button></div></div>`;
   }).join('');
 }
 
@@ -569,7 +496,6 @@ async function reject(id) {
   await fetch(`${SUPA_URL}/rest/v1/pending_approvals?id=eq.${id}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({status:'rejected'}) });
   loadApprovals();
 }
-
 function selectAlt(id, num) {
   const a = approvalsData.find(x => x.id === id);
   if (!a) return;
@@ -580,128 +506,21 @@ function selectAlt(id, num) {
   document.getElementById('alt2-' + id).classList.toggle('selected', num === 2);
 }
 
-// ── MEMORIES ──────────────────────────────────────────────
-const CATS = ['value','personality','preference','belief','habit','goal','communication','knowledge','experience'];
-const CAT_LABELS_SV = {value:'Värdering',personality:'Personlighet',preference:'Preferens',belief:'Övertygelse',habit:'Vana',goal:'Mål',communication:'Kommunikation',knowledge:'Kunskap',experience:'Erfarenhet'};
-const CAT_LABELS_EN = {value:'Value',personality:'Personality',preference:'Preference',belief:'Belief',habit:'Habit',goal:'Goal',communication:'Communication',knowledge:'Knowledge',experience:'Experience'};
-
-const CAT_PLACEHOLDERS_SV = {
-  value: 'Vad är viktigast för dig i livet? T.ex: ärlighet, lojalitet, frihet, familj, karriär – och varför?',
-  personality: 'Hur skulle dina närmaste beskriva dig som person? Är du direkt, humoristisk, introvert, omtänksam?',
-  preference: 'Föredrar du korta direkta svar eller detaljerade förklaringar? Formellt eller avslappnat språk?',
-  belief: 'Vad tror du starkt på som andra kanske inte håller med om? Politiskt, socialt, professionellt?',
-  habit: 'Hur inleder du vanligtvis ett mail – hälsning, direkt på sak, eller lite småprat först?',
-  goal: 'Vad vill du uppnå det närmaste året inom karriär, relationer eller personlig utveckling?',
-  communication: 'Hur anpassar du tonen beroende på om det är en nära vän, kollega eller okänd klient?',
-  knowledge: 'Vad är du expert på eller riktigt kunnig inom? Vad frågar folk dig om råd?',
-  experience: 'Berätta om en erfarenhet som har format hur du kommunicerar eller tänker idag.'
-};
-
-const CAT_PLACEHOLDERS_EN = {
-  value: 'What matters most to you in life? E.g. honesty, loyalty, freedom, family, career – and why?',
-  personality: 'How would people close to you describe you? Direct, humorous, introverted, caring?',
-  preference: 'Do you prefer short direct answers or detailed explanations? Formal or casual language?',
-  belief: 'What do you strongly believe in that others might disagree with? Politically, socially, professionally?',
-  habit: 'How do you typically start an email – with a greeting, straight to the point, or some small talk first?',
-  goal: 'What do you want to achieve in the next year in career, relationships or personal growth?',
-  communication: 'How do you adjust your tone depending on whether it is a close friend, colleague or unknown client?',
-  knowledge: 'What are you an expert in or really knowledgeable about? What do people ask your advice on?',
-  experience: 'Tell about an experience that has shaped how you communicate or think today.'
-};
-
-let currentCat = 'value';
-
-function getCatLabels() { return currentLang === 'sv-SE' ? CAT_LABELS_SV : CAT_LABELS_EN; }
-function getCatPlaceholders() { return currentLang === 'sv-SE' ? CAT_PLACEHOLDERS_SV : CAT_PLACEHOLDERS_EN; }
-
-function updateCatPlaceholder() {
-  const ta = document.getElementById('mem-content');
-  if (ta) ta.placeholder = getCatPlaceholders()[currentCat] || '';
-}
-
-function initCategories() {
-  const labels = getCatLabels();
-  document.getElementById('cat-grid').innerHTML = CATS.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="setCat('${c}',this)">${labels[c]}</button>`).join('');
-  updateCatPlaceholder();
-}
-function setCat(c, el) { currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); updateCatPlaceholder(); }
-
-async function addMemory() {
-  const content = document.getElementById('mem-content').value.trim();
-  const summary = document.getElementById('mem-summary').value.trim();
-  if (!content) return;
-  if (!currentUser) return alert(t('login_required'));
-  const token = await getToken();
-  const btn = document.querySelector('[onclick="addMemory()"]');
-  btn.textContent = '...'; btn.disabled = true;
-  const r = await fetch(`${SUPA_URL}/rest/v1/memories`, {
-    method: 'POST', headers: { ...getHeaders(token), Prefer: 'return=minimal' },
-    body: JSON.stringify({ user_id: getUserId(), content, summary: summary || content.slice(0,60), category: currentCat, tier: 'full', confidence: 1.0, source: 'manual_training', activation_weight: 1.0 })
-  });
-  btn.textContent = t('mem_add_btn'); btn.disabled = false;
-  if (r.ok) { document.getElementById('mem-content').value = ''; document.getElementById('mem-summary').value = ''; loadMemories(); }
-}
-
-async function loadMemories() {
-  if (!currentUser) return;
-  const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/memories?user_id=eq.${getUserId()}&order=created_at.desc`, { headers: getHeaders(token) });
-  const data = await r.json();
-  const labels = getCatLabels();
-  document.getElementById('mem-list').innerHTML = Array.isArray(data) && data.length
-    ? data.map(m => `<div class="mem-item"><div class="mem-content"><div class="mem-summary">${m.summary||''}</div><div class="mem-text">${m.content||''}</div></div><span class="mem-cat-badge">${labels[m.category]||m.category}</span><button class="del-btn" onclick="deleteMemory('${m.id}')">×</button></div>`).join('')
-    : `<div class="empty">${t('empty_memories')}</div>`;
-}
-
-async function deleteMemory(id) {
-  const token = await getToken();
-  await fetch(`${SUPA_URL}/rest/v1/memories?id=eq.${id}`, { method: 'DELETE', headers: getHeaders(token) });
-  loadMemories();
-}
-
 // ── RELATIONSHIPS ─────────────────────────────────────────
+let relData = [];
 let editingRelId = null;
 
 async function loadRelationships() {
-  const uid = getUserId(); const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
-  const data = await r.json();
-  const list = document.getElementById('rel-list');
-  if (!data.length) { list.innerHTML=`<div class="empty">${t('empty_contacts')}</div>`; return; }
-  list.innerHTML = data.map(rel => {
-    const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-    const trust = rel.trust_level||0;
-    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="editRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
-  }).join('');
-}
-
-function editRelationship(id) {
-  const rel = relData?.find(r => r.id === id);
-  if (!rel) { loadRelationshipsData(id); return; }
-  fillRelForm(rel);
-}
-
-async function loadRelationshipsData(editId) {
-  const uid = getUserId(); const token = await getToken();
-  const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&id=eq.${editId}`, { headers: getHeaders(token) });
-  const data = await r.json();
-  if (data.length) fillRelForm(data[0]);
-}
-
-let relData = [];
-
-async function loadRelationships() {
-  const uid = getUserId(); const token = await getToken();
+  const uid = getUserId(), token = await getToken();
   const r = await fetch(`${SUPA_URL}/rest/v1/relationships?user_id=eq.${uid}&order=last_interaction_at.desc`, { headers: getHeaders(token) });
   relData = await r.json();
   const list = document.getElementById('rel-list');
-  if (!relData.length) { list.innerHTML=`<div class="empty">${t('empty_contacts')}</div>`; return; }
+  if (!relData.length) { list.innerHTML = '<div class="empty">Inga kontakter ännu</div>'; return; }
   list.innerHTML = relData.map(rel => {
     const initials = (rel.contact_name||'?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
     const trust = rel.trust_level||0;
-    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : t('never');
-    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="fillRelForm(relData.find(x=>x.id==='${rel.id}'))" class="rel-action-btn" title="Redigera">✏️</button><button onclick="deleteRelationship('${rel.id}')" class="rel-action-btn rel-delete-btn" title="Ta bort">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`${t('style_label')}: ${rel.communication_style}<br>`:''}${rel.important_context?`${t('context_label')}: ${rel.important_context}<br>`:''}${t('last_active')}: ${last}</div></div>`;
+    const last = rel.last_interaction_at ? new Date(rel.last_interaction_at).toLocaleDateString() : 'Aldrig';
+    return `<div class="rel-card"><div class="rel-header"><div class="avatar">${initials}</div><div><div class="rel-name">${rel.contact_name||'?'}</div><div class="rel-email">${rel.contact_email||''}</div></div><span class="badge" style="margin-left:auto;background:#1a1a1a;color:#a78bfa;border:0.5px solid #3a2a6a;">Trust ${trust}/10</span><button onclick="fillRelForm(relData.find(x=>x.id==='${rel.id}'))" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;">✏️</button><button onclick="deleteRelationship('${rel.id}')" style="background:none;border:none;cursor:pointer;color:#666;font-size:14px;padding:4px 8px;">🗑️</button></div><div class="trust-bar"><div class="trust-fill" style="width:${trust*10}%"></div></div><div class="rel-detail">${rel.communication_style?`Stil: ${rel.communication_style}<br>`:''}${rel.important_context?`Kontext: ${rel.important_context}<br>`:''}Senast aktiv: ${last}</div></div>`;
   }).join('');
 }
 
@@ -714,7 +533,7 @@ function fillRelForm(rel) {
   document.getElementById('rel-trust').value = rel.trust_level || 5;
   document.getElementById('rel-context').value = rel.important_context || '';
   const btn = document.querySelector('[onclick="addRelationship()"]');
-  btn.textContent = currentLang === 'sv-SE' ? '💾 Spara ändringar' : '💾 Save changes';
+  btn.textContent = '💾 Spara ändringar';
   btn.style.background = '#1a2a1a';
   document.getElementById('rel-name').scrollIntoView({ behavior: 'smooth' });
 }
@@ -732,60 +551,992 @@ async function addRelationship() {
   const trust = parseInt(document.getElementById('rel-trust').value)||5;
   const context = document.getElementById('rel-context').value.trim();
   if (!name||!email) return;
-  const uid = getUserId(); const token = await getToken();
+  const uid = getUserId(), token = await getToken();
   if (editingRelId) {
     await fetch(`${SUPA_URL}/rest/v1/relationships?id=eq.${editingRelId}`, { method:'PATCH', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
     editingRelId = null;
     const btn = document.querySelector('[onclick="addRelationship()"]');
-    btn.textContent = t('add_contact_btn');
+    btn.textContent = 'Lägg till kontakt';
     btn.style.background = '#a78bfa';
   } else {
     await fetch(`${SUPA_URL}/rest/v1/relationships`, { method:'POST', headers:{...getHeaders(token),Prefer:'return=minimal'}, body: JSON.stringify({user_id:uid,contact_name:name,contact_email:email,communication_style:style,trust_level:trust,important_context:context}) });
   }
-  ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id=>document.getElementById(id).value='');
+  ['rel-name','rel-email','rel-style','rel-trust','rel-context'].forEach(id => document.getElementById(id).value='');
   loadRelationships();
 }
 
-// ── MIC ───────────────────────────────────────────────────
-let recognition = null;
-let isRecording = false;
+// ── QUIZ ──────────────────────────────────────────────────
+const CATS = [
+  {id:'tone',name:'Ton & Röst',icon:'🎙️'},
+  {id:'vocab',name:'Ordval & Stil',icon:'✍️'},
+  {id:'relations',name:'Relationer',icon:'🤝'},
+  {id:'conflict',name:'Konflikt & Gränser',icon:'⚡'},
+  {id:'emotion',name:'Känslor & Empati',icon:'❤️'},
+  {id:'structure',name:'Struktur & Format',icon:'📐'},
+  {id:'values',name:'Värderingar i text',icon:'🧭'},
+  {id:'humor',name:'Humor & Personlighet',icon:'😄'},
+  {id:'context',name:'Situationer & Kontext',icon:'🗂️'}
+];
 
-function toggleMic() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert(t('mic_error')); return; }
-  if (isRecording) { recognition.stop(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = currentLang;
-  const btn = document.getElementById('mic-btn');
-  let finalTranscript = document.getElementById('mem-content').value;
-  recognition.onstart = () => { isRecording = true; btn.textContent = t('mic_stop'); btn.style.borderColor = '#f87171'; btn.style.color = '#f87171'; };
-  recognition.onresult = (e) => {
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) { finalTranscript += e.results[i][0].transcript + ' '; }
-      else { interim = e.results[i][0].transcript; }
-    }
-    document.getElementById('mem-content').value = finalTranscript + interim;
-  };
-  recognition.onend = () => { isRecording = false; btn.textContent = t('mic_btn'); btn.style.borderColor = '#2a3a5a'; btn.style.color = '#93c5fd'; };
-  recognition.start();
+const Q = {
+tone:[
+  {t:'write',q:'Skriv exakt hur du brukar hälsa i ett mail till en nära vän vs en okänd affärskontakt. Ge ett exempel på varje.'},
+  {t:'yn',q:'Du skriver oftast kortare mail än vad du egentligen tänkte från början?'},
+  {t:'write',q:'Hur avslutar du ett mail? Skriv dina tre vanligaste avslutningar.'},
+  {t:'yn',q:'Din naturliga ton i mail är mer varm än kylig?'},
+  {t:'yn',q:'Du anpassar tonen dramatiskt beroende på mottagare?'},
+  {t:'write',q:'Beskriv din ton i ett mail där du är irriterad men måste låta professionell. Skriv en exempelmening.'},
+  {t:'yn',q:'Du skriver ofta kortare meningar när du är på gott humör?'},
+  {t:'yn',q:'Du tenderar att vara mer formell skriftligt än du är i person?'},
+  {t:'write',q:'Skriv en typisk öppningsmening du använder när du mailar någon du inte pratat med på länge.'},
+  {t:'yn',q:'Du är rakare och mer direkt i mail än i muntlig kommunikation?'},
+  {t:'write',q:'Hur låter du när du tackar någon? Skriv exakt hur du brukar tacka.'},
+  {t:'yn',q:'Du börjar ofta mail med mottagarens namn (t.ex. "Hej Anna,")?'},
+  {t:'yn',q:'Du undviker "Bästa" som hälsning?'},
+  {t:'write',q:'Skriv hur du låter när du är entusiastisk i ett mail. Ge ett konkret exempel.'},
+  {t:'yn',q:'Din ton är mer avslappnad på kvällen än på morgonen?'},
+  {t:'yn',q:'Du skriver oftast i ett enda stycke snarare än flera separata?'},
+  {t:'write',q:'Vad är din "default" hälsningsfras som du nästan alltid använder?'},
+  {t:'yn',q:'Du undviker utropstecken i professionella mail?'},
+  {t:'yn',q:'Du använder ofta "självklart" eller "absolut" som bekräftelse?'},
+  {t:'write',q:'Skriv hur ett typiskt mail från dig låter när du ber om något – ton, formulering, längd.'},
+  {t:'yn',q:'Du låter lugnare i text än du faktiskt känner dig?'},
+  {t:'yn',q:'Du är mer direkt på engelska än på svenska?'},
+  {t:'write',q:'Hur skiljer sig din ton i ett sms jämfört med ett mail? Ge exempel.'},
+  {t:'yn',q:'Du skriver sällan "jag hoppas att allt är bra" som öppning?'},
+  {t:'yn',q:'Du föredrar att tona ned dina känslouttryck i text?'},
+  {t:'write',q:'Skriv hur du låter när du vill låta auktoritativ men inte arrogant. Exempelmening.'},
+  {t:'yn',q:'Du är mer chattigt och personlig i mail till folk du känner bra?'},
+  {t:'yn',q:'Du undviker passiv röst ("det gjordes" vs "jag gjorde")?'},
+  {t:'write',q:'Beskriv hur du låter i ett mail skickat på fredag eftermiddag jämfört med måndag morgon.'},
+  {t:'yn',q:'Din naturliga ton är mer ödmjuk än självhävdande?'},
+  {t:'yn',q:'Du använder ofta tre punkter (...) för att mjuka upp meningar?'},
+  {t:'write',q:'Skriv exakt hur du brukar avsluta ett mail du är osäker på om du formulerat rätt.'},
+  {t:'yn',q:'Du skriver ibland om hela mail om tonen känns fel?'},
+  {t:'yn',q:'Du är mer direkt med chefer än med kollegor?'},
+  {t:'write',q:'Hur låter du i ett uppföljningsmail när du inte fått svar? Skriv ett exempel.'},
+  {t:'yn',q:'Du undviker att låta desperat eller påträngande i uppföljningsmail?'},
+  {t:'yn',q:'Du föredrar att låta neutral i konfliktsituationer skriftligt?'},
+  {t:'write',q:'Skriv tre varianter av hur du bekräftar mottagande av ett mail (t.ex. "Tack, noterat").'},
+  {t:'yn',q:'Du anpassar meningslängden efter hur formellt mailet är?'},
+  {t:'yn',q:'Du skriver sällan längre mail än vad som behövs?'},
+  {t:'write',q:'Skriv hur du brukar inleda ett mail där du ska leverera information – inte fråga om något.'},
+  {t:'yn',q:'Din ton är vänligare mot klienter än mot interna kollegor?'},
+  {t:'yn',q:'Du använder sällan "Med vänliga hälsningar" numera?'},
+  {t:'write',q:'Hur låter du i ett mail när du är stressad och har bråttom? Skriv ett exempel.'},
+  {t:'yn',q:'Du är konsekvent i tonen inom samma mailkonversation?'},
+  {t:'yn',q:'Du låter mer personlig när du mailar på mobiltelefonen?'},
+  {t:'write',q:'Skriv hur du formulerar dig när du vill vara artig men bestämd.'},
+  {t:'yn',q:'Du skriver sällan onödiga fyllnadsfraser som "som sagt" eller "i alla fall"?'},
+  {t:'yn',q:'Du föredrar att låta lugn och samlad även i brådskande mail?'},
+  {t:'write',q:'Vad är den vanligaste missen folk gör med tonen i mail som du aldrig gör?'},
+  {t:'yn',q:'Du anpassar alltid tonen om du vet att mailet kan vidarebefordras?'},
+  {t:'write',q:'Skriv hur din ton förändras om ämnesraden är "VIKTIGT" kontra ingen ämnesrad.'},
+  {t:'yn',q:'Du tenderar att vara kortare i svar än i initiala mail?'},
+  {t:'yn',q:'Du använder sällan all caps för att betona?'},
+  {t:'write',q:'Beskriv i tre ord hur du vill att mottagaren ska uppfatta tonen i dina mail.'},
+  {t:'yn',q:'Du korrekturläser alltid mail över en viss längd?'},
+  {t:'yn',q:'Din ton är mer lekfull sent på kvällen?'},
+  {t:'write',q:'Skriv hur du låter i ett mail till en person du inte gillar men måste samarbeta med.'},
+  {t:'yn',q:'Du undviker att låta för entusiastisk i professionella mail?'},
+  {t:'yn',q:'Du anpassar tonen om mottagaren skriver formellt till dig?'},
+  {t:'write',q:'Hur låter du i ett mail där du ber om förlängd deadline? Skriv ett exempel.'},
+  {t:'yn',q:'Du är mer direkt på engelska och mer omskrivande på svenska?'},
+  {t:'yn',q:'Du tycker tonen i dina mail generellt speglar din verkliga personlighet?'},
+  {t:'write',q:'Skriv hur du avslutar ett mail som kräver att mottagaren agerar.'},
+  {t:'yn',q:'Du undviker att inleda mail med "Jag"?'},
+  {t:'yn',q:'Du skriver hellre "Hej" än "Hallå"?'},
+  {t:'write',q:'Skriv hur du hälsar om du mailar en grupp (t.ex. "Hej alla," – eller något annat?).'},
+  {t:'yn',q:'Din naturliga röst i text är mer informell än formell?'},
+  {t:'yn',q:'Du föredrar kortare hälsningsfraser framför längre?'},
+  {t:'write',q:'Ge ett exempel på ett mail du skickade nyligen som du var nöjd med tonen på.'},
+  {t:'yn',q:'Du anpassar längden på din signatur beroende på mottagare?'},
+  {t:'yn',q:'Du föredrar att maila på förmiddagen?'},
+  {t:'write',q:'Hur låter du i ett tacksägelsemail – skriv ett konkret exempel.'},
+  {t:'yn',q:'Du undviker formella fraser som "Härmed informerar jag er om..."?'},
+  {t:'yn',q:'Du är mer eftertänksam i tonen på mail som handlar om pengar?'},
+  {t:'write',q:'Skriv hur du formulerar dig när du vill avsluta en lång mailkonversation elegant.'},
+  {t:'yn',q:'Din ton är mer bestämd i skrift än i tal?'},
+  {t:'yn',q:'Du föredrar att maila tydligt och enkelt framför litterärt och utarbetat?'},
+  {t:'write',q:'Skriv en mening som visar precis hur du låter när du är på ditt bästa – din optimala ton.'},
+  {t:'yn',q:'Du ger alltid ett svar, även om det bara är "Tack, återkommer"?'},
+  {t:'yn',q:'Du tycker dina mail generellt är för långa?'},
+  {t:'write',q:'Skriv hur du låter i ett mail där du säger nej till något. Ge ett konkret exempel.'},
+  {t:'yn',q:'Du föredrar att maila direkt istället för att ringa, i de flesta fall?'},
+  {t:'yn',q:'Du undviker att be om ursäkt i onödan i dina mail?'},
+  {t:'write',q:'Beskriv hur din ideala AI-klon ska låta i ett mail – tre ord eller meningar.'},
+  {t:'yn',q:'Du tycker tonen i AI-genererade mail ofta är för formell?'},
+  {t:'yn',q:'Du föredrar att AI:n låter som dig på en bra dag, inte en perfekt dag?'},
+  {t:'write',q:'Skriv tre saker som din AI-klon ALDRIG ska skriva i ditt namn.'},
+  {t:'yn',q:'Du vill att AI:n ska kunna vara lite personlig och inte bara robotaktig?'},
+  {t:'yn',q:'Du accepterar att AI:n ibland väljer en lite annan formulering men samma ton?'},
+  {t:'write',q:'Skriv hur ett perfekt mail i ditt namn ser ut – från hälsning till avslutning.'},
+  {t:'yn',q:'Du föredrar att AI:n är kortfattad om du inte gett specifika instruktioner?'},
+  {t:'yn',q:'Du vill att AI:n alltid svarar på alla frågor i ett mail, inte bara en?'},
+  {t:'write',q:'Vad ska din AI-klon göra om mailet är otydligt och oklart vad avsändaren vill?'},
+  {t:'yn',q:'Du vill att AI:n alltid avslutar med ett konkret nästa steg om det är relevant?'},
+  {t:'yn',q:'Du föredrar att AI:n undviker fraser som "Som jag förstår det..."?'},
+],
+vocab:[
+  {t:'write',q:'Vilka slangord eller uttryck använder du ofta i informella mail? Lista minst fem.'},
+  {t:'yn',q:'Du använder "kul" ofta istället för "roligt"?'},
+  {t:'write',q:'Vilka ord använder du ALDRIG i mail – ord som känns fel i din mun?'},
+  {t:'yn',q:'Du skriver "asap" eller föredrar du "så snart som möjligt"?'},
+  {t:'write',q:'Skriv fem ord som beskriver hur din mailstil låter – dina egna ord.'},
+  {t:'yn',q:'Du använder ofta engelska ord och fraser i svenska mail?'},
+  {t:'write',q:'Vilka engelska ord eller fraser blandar du in i dina svenska mail?'},
+  {t:'yn',q:'Du skriver "ok" istället för "okej"?'},
+  {t:'write',q:'Hur formulerar du dig när du vill uttrycka att något är bra? Ge tre varianter du faktiskt använder.'},
+  {t:'yn',q:'Du använder ofta "precis" eller "exakt" som bekräftelse?'},
+  {t:'write',q:'Hur säger du att du inte förstår något utan att låta dum? Skriv ditt typiska sätt.'},
+  {t:'yn',q:'Du skriver "mvh" som avslutning ibland?'},
+  {t:'write',q:'Vilka fraser använder du när du håller med någon? Lista dina vanligaste.'},
+  {t:'yn',q:'Du undviker ord som "feedback", "synergier" och annan buzzword-jargong?'},
+  {t:'write',q:'Hur uttrycker du brådska utan att låta stressad? Skriv ett exempeluttryck.'},
+  {t:'yn',q:'Du föredrar korta ord framför långa synonymer?'},
+  {t:'write',q:'Vilka fraser använder du när du INTE håller med – utan att låta konfrontativ?'},
+  {t:'yn',q:'Du använder "tack" mer än "tack så mycket"?'},
+  {t:'write',q:'Skriv hur du formulerar en invändning – ditt typiska sätt att säga "men..."'},
+  {t:'yn',q:'Du använder ofta punktlistor när du har mer än två saker att säga?'},
+  {t:'write',q:'Vilka ord signalerar för dig att ett mail är för formellt och stelt?'},
+  {t:'yn',q:'Du skriver sällan "vänligen" i dina mail?'},
+  {t:'write',q:'Hur ber du om förtydligande? Skriv din typiska mening.'},
+  {t:'yn',q:'Du föredrar aktiv röst – "jag gör X" framför "X kommer att göras"?'},
+  {t:'write',q:'Vilka yrkes- eller branschspecifika ord ingår naturligt i ditt ordförråd?'},
+  {t:'yn',q:'Du använder sällan förkortningar utom i sms och chatt?'},
+  {t:'write',q:'Hur formulerar du en deadline på ett tydligt men icke-aggressivt sätt?'},
+  {t:'yn',q:'Du skriver "hör av dig" istället för "kontakta mig"?'},
+  {t:'write',q:'Skriv tre varianter på hur du säger "jag återkommer" i mail.'},
+  {t:'yn',q:'Du är mer noggrann med stavning i professionella mail?'},
+  {t:'write',q:'Vilka ord eller fraser avslöjar att ett mail INTE är skrivet av dig?'},
+  {t:'yn',q:'Du föredrar "vi" framför "jag" i professionella sammanhang?'},
+  {t:'write',q:'Hur skriver du datum och klockslag i mail – "måndag den 14/6" eller "14 juni" eller något annat?'},
+  {t:'yn',q:'Du skriver siffror med bokstäver under tio ("tre" istället för "3")?'},
+  {t:'write',q:'Vad är ditt alternativ till "Hoppas att allt är bra" – om du ens använder ett?'},
+  {t:'yn',q:'Du undviker meningar som börjar med "Och" eller "Men"?'},
+  {t:'write',q:'Hur hänvisar du till ett tidigare mail i en konversation? Skriv ditt typiska sätt.'},
+  {t:'yn',q:'Du skriver "inga problem" snarare än "inget problem"?'},
+  {t:'write',q:'Vilka tre adjektiv beskriver bäst din skrivna kommunikationsstil?'},
+  {t:'yn',q:'Du undviker att upprepa samma ord i ett mail?'},
+  {t:'write',q:'Hur formulerar du ett godkännande? ("Låter bra" / "Kör på det" / "Perfekt" – eller?)'},
+  {t:'yn',q:'Du skriver helst fullständiga meningar, inte fragmenterade?'},
+  {t:'write',q:'Ge fem exempel på hur du börjar en mening i ett typiskt mail från dig.'},
+  {t:'yn',q:'Du använder sällan utfyllnadsord som "liksom", "typ", "faktiskt" i mail?'},
+  {t:'write',q:'Hur uttrycker du tvekan eller osäkerhet i text? Skriv ett exempeluttryck.'},
+  {t:'yn',q:'Du föredrar "se till att" framför "se till och"?'},
+  {t:'write',q:'Vilka ord eller fraser signalerar för mottagaren att du är på gott humör?'},
+  {t:'yn',q:'Du skriver "okej" istället för "OK" i mer personliga mail?'},
+  {t:'write',q:'Hur avslutar du ett mail när du är osäker på om din ton blivit rätt?'},
+  {t:'yn',q:'Du använder sällan meningar med fler än 25 ord?'},
+  {t:'write',q:'Beskriv skillnaden i ordval när du mailar på svenska jämfört med engelska.'},
+  {t:'yn',q:'Du föredrar "nu" framför "i dagsläget" eller "för tillfället"?'},
+  {t:'write',q:'Skriv hur du formulerar en påminnelse om något utan att låta irriterad.'},
+  {t:'yn',q:'Du skriver sällan "ifall" – mer "om"?'},
+  {t:'write',q:'Ge tre konkreta exempel på fraser du är känd för att skriva.'},
+  {t:'yn',q:'Du undviker att börja mail med "Hoppas du mår bra"?'},
+  {t:'write',q:'Hur förklarar du något komplicerat på ett enkelt sätt i mail – vad är din strategi?'},
+  {t:'yn',q:'Du är tydlig med vem som ska göra vad i dina mail?'},
+  {t:'write',q:'Skriv hur du uttrycker att du är redo att hjälpa eller stödja någon.'},
+  {t:'yn',q:'Du föredrar "hjälper gärna" framför "vänligen kontakta mig om du behöver hjälp"?'},
+  {t:'write',q:'Vilka ord eller fraser avslöjar din ålder eller generation i ditt skrivande?'},
+  {t:'yn',q:'Du undviker substantiveringar som "implementering" och "genomförande" när du kan?'},
+  {t:'write',q:'Hur beskriver du ett problem utan att skylla på någon? Skriv ett exempeluttryck.'},
+  {t:'yn',q:'Du skriver sällan "i detta avseende" eller liknande byråkratiska fraser?'},
+  {t:'write',q:'Ge fem ord du ofta använder som ingen runt dig verkar använda lika mycket.'},
+  {t:'yn',q:'Du föredrar konkreta ord framför abstrakta?'},
+  {t:'write',q:'Skriv hur du ber om någons mening på ett naturligt sätt.'},
+  {t:'yn',q:'Du undviker "verifiera" – skriver hellre "kolla" eller "bekräfta"?'},
+  {t:'write',q:'Vilka engelska fraser byter du INTE ut mot svenska i dina mail?'},
+  {t:'yn',q:'Du skriver "tack på förhand" ibland?'},
+  {t:'write',q:'Hur ser din typiska signatur ut – exakt text?'},
+  {t:'yn',q:'Du föredrar enkla tecken (–) framför komplicerade (;)?'},
+  {t:'write',q:'Skriv hur du formulerar ett förslag – "Vad sägs om..." eller "Jag tänkte att..." eller?'},
+  {t:'yn',q:'Du skriver sällan "etc." i mail?'},
+  {t:'write',q:'Vilka ord och fraser vill du att din AI-klon ska använda extra mycket?'},
+  {t:'yn',q:'Du föredrar "kort och gott" framför långa utläggningar?'},
+  {t:'write',q:'Skriv tre fraser du aldrig vill se i ett mail som ska låta som dig.'},
+  {t:'yn',q:'Du skriver "det vill säga" hellre än "dvs."?'},
+  {t:'write',q:'Ge ett exempel på en mening som låter 100% som dig.'},
+  {t:'yn',q:'Du är konsekvent med stor bokstav efter kolon?'},
+  {t:'write',q:'Hur ber du om ett möte via mail? Skriv din typiska formulering.'},
+  {t:'yn',q:'Du föredrar "vi ses" framför "ses" som avslutning i informella mail?'},
+  {t:'write',q:'Beskriv vad som gör ett mail omöjligt att blanda ihop med ett skrivet av dig.'},
+  {t:'yn',q:'Du undviker att skriva långa meningar med många inskjutna bisatser?'},
+  {t:'yn',q:'Du skriver sällan "ej" – hellre "inte"?'},
+  {t:'write',q:'Vad är tre saker i ditt ordval som en AI MÅSTE förstå för att låta som dig?'},
+  {t:'yn',q:'Du föredrar punktlistor framför numrerade listor?'},
+  {t:'yn',q:'Du skriver "kom ihåg" istället för "notera" i mail?'},
+  {t:'write',q:'Skriv exakt vad du skriver när du har glada nyheter att dela.'},
+  {t:'yn',q:'Du undviker ofta att skriva "Jag" som första ord i ett mail?'},
+  {t:'yn',q:'Du föredrar "ta gärna kontakt" framför "tveka inte att höra av dig"?'},
+  {t:'write',q:'Beskriv den perfekta meningen – hur lång, hur uppbyggd, vilka ord?'},
+],
+relations:[
+  {t:'write',q:'Skriv hur du hälsar på din bästa vän i ett mail. Exakt vad du skulle skriva.'},
+  {t:'yn',q:'Du är mer personlig i mail till vänner än till kollegor?'},
+  {t:'write',q:'Hur mailar du din chef om du behöver ledigt? Skriv ett exempelmail.'},
+  {t:'yn',q:'Du anpassar alltid mail-längden efter hur väl du känner personen?'},
+  {t:'write',q:'Skriv hur du presenterar dig i ett kallt mail till en okänd person.'},
+  {t:'yn',q:'Du är rakare mot nära kollegor än mot externa kontakter?'},
+  {t:'write',q:'Hur mailar du en klient du träffat en gång? Annorlunda mot en du träffat tio gånger?'},
+  {t:'yn',q:'Du använder förnamn direkt med nya kontakter?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från din chef som du håller med om helt.'},
+  {t:'yn',q:'Du är mer eftertänksam i mail till äldre kontakter?'},
+  {t:'write',q:'Hur mailar du en vän du inte hört från på sex månader? Skriv öppningen.'},
+  {t:'yn',q:'Du är tydligare med instruktioner när du mailar folk du inte känner?'},
+  {t:'write',q:'Skriv hur du tackar en mentor eller person du ser upp till.'},
+  {t:'yn',q:'Du anpassar formalitetsnivån efter mottagarens position, inte bara relation?'},
+  {t:'write',q:'Hur mailar du en klient som alltid är sen med betalning? Skriv ett exempelmail.'},
+  {t:'yn',q:'Du är varmare i mail till folk du gillar personligen?'},
+  {t:'write',q:'Skriv hur du introducerar två kontakter för varandra via mail.'},
+  {t:'yn',q:'Du mailar sällan utan att ha ett tydligt syfte?'},
+  {t:'write',q:'Hur skriver du till en kollega som gjort ett misstag som påverkat dig?'},
+  {t:'yn',q:'Du är mer lösningsfokuserad och mindre anklagande mot kollegor?'},
+  {t:'write',q:'Skriv hur du mailar en gammal affärskontakt du vill återaktivera.'},
+  {t:'yn',q:'Du speglar ofta mottagarens ton om de är väldigt formella?'},
+  {t:'write',q:'Hur hanterar du ett mail från någon du inte gillar men måste svara?'},
+  {t:'yn',q:'Du är mer direkt med nära kollegor och mer omskrivande med externa?'},
+  {t:'write',q:'Skriv hur du mailar ett team om en förändring de kanske inte gillar.'},
+  {t:'yn',q:'Du använder "vi" istället för "jag" i mail som representerar ett team?'},
+  {t:'write',q:'Hur hanterar du ett mail du fått av misstag och ska vidarebefordra?'},
+  {t:'yn',q:'Du är extra noga med tonen om mottagaren är mer senior än du?'},
+  {t:'write',q:'Skriv hur du välkomnar en ny person till ett projekt eller team.'},
+  {t:'yn',q:'Du är mer avslappnad i mail till folk på samma nivå som du?'},
+  {t:'write',q:'Hur mailar du en leverantör om du är missnöjd med deras arbete?'},
+  {t:'yn',q:'Du sätter dig alltid i mottagarens position innan du skickar?'},
+  {t:'write',q:'Skriv hur du tackar av en person som slutar på ett jobb eller projekt.'},
+  {t:'yn',q:'Du är mer personlig i mail till folk som också är personliga mot dig?'},
+  {t:'write',q:'Hur hanterar du ett mail från en klient som är upprörd? Skriv ett exempelsvar.'},
+  {t:'yn',q:'Du är alltid professionell oavsett hur nära relationen är?'},
+  {t:'write',q:'Skriv hur du mailar om du behöver en tjänst av en vän.'},
+  {t:'yn',q:'Du är tydligare med förväntningar när du skriver till folk du inte arbetat med förr?'},
+  {t:'write',q:'Hur mailar du till en person vars arbete du vill ge beröm?'},
+  {t:'yn',q:'Du anpassar alltid längden på mail efter vad relationen "tål"?'},
+  {t:'write',q:'Skriv hur du bemöter ett mail från en okänd som ber om din tid.'},
+  {t:'yn',q:'Du är lika noga med tonen i interna mail som i externa?'},
+  {t:'write',q:'Hur hanterar du ett mail från en partner eller nära relation om arbete?'},
+  {t:'yn',q:'Du föredrar att ha lite mer small talk med klienter du känner bra?'},
+  {t:'write',q:'Skriv hur du mailar en kontakt du träffade på ett event och vill följa upp med.'},
+  {t:'yn',q:'Du speglar sällan negativt tonläge även om mottagaren är negativ?'},
+  {t:'write',q:'Hur hanterar du mail från någon som alltid är väldigt formell och stiff?'},
+  {t:'yn',q:'Du undviker att kommentera personliga saker i mail om du inte känner personen?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail där du måste säga nej till en vän.'},
+  {t:'yn',q:'Du är snabbare med att svara på mail från folk du har nära relation till?'},
+  {t:'write',q:'Hur mailar du när du ska be en okänd expert om råd?'},
+  {t:'yn',q:'Du är alltid lika trevlig i mail oavsett hur du mår den dagen?'},
+  {t:'write',q:'Skriv hur du mailar din chef med ett förslag du är osäker på om de gillar.'},
+  {t:'yn',q:'Du är mer direkt med förväntningar till folk som rapporterar till dig?'},
+  {t:'write',q:'Hur hanterar du mail från folk som skriver för mycket och slingrar sig?'},
+  {t:'yn',q:'Du anpassar detaljnivån i mail efter vad du tror mottagaren redan vet?'},
+  {t:'write',q:'Skriv hur du hanterar en situation där du fått ett mail som borde gå till någon annan.'},
+  {t:'yn',q:'Du är mer entusiastisk i mail till folk du verkligen gillar jobba med?'},
+  {t:'write',q:'Hur mailar du för att hålla en viktig relation varm utan att ha ett konkret ärende?'},
+  {t:'yn',q:'Du föredrar att maila direkt framför att cc:a onödiga personer?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en klient som är nöjd och säger tack.'},
+  {t:'yn',q:'Du undviker att sätta folk på cc utan att de vet om det?'},
+  {t:'write',q:'Hur mailar du till en grupp du aldrig träffat innan? Skriv öppningen.'},
+  {t:'yn',q:'Du är mer eftertänksam med att välja "svara alla" noggrant?'},
+  {t:'write',q:'Skriv hur du bemöter ett mail från en junior som har gjort ett bra jobb.'},
+  {t:'yn',q:'Du är mer tillgiven med folks misstag i mail om du känner dem väl?'},
+  {t:'write',q:'Hur hanterar du mail från folk som aldrig svarar på allt du frågar?'},
+  {t:'yn',q:'Du är alltid respektfull i tonen, oavsett hur dålig din relation till personen är?'},
+  {t:'write',q:'Beskriv din generella filosofi för hur du behandlar olika typer av kontakter i mail.'},
+  {t:'yn',q:'Du anpassar mailfrekvens efter vad relationen normalt sett innebär?'},
+  {t:'write',q:'Vad är den viktigaste regeln du har för hur du kommunicerar med andra via mail?'},
+  {t:'yn',q:'Du föredrar att etablera relation via ett samtal innan du mailar löpande?'},
+  {t:'write',q:'Skriv hur du mailar en person som du vet är väldigt upptagen.'},
+  {t:'yn',q:'Du är noga med att inte blanda ihop relationer i samma mail-konversation?'},
+  {t:'write',q:'Hur mailar du en person du har en komplicerad relation till?'},
+  {t:'yn',q:'Du föredrar att ha kortare men fler interaktioner med nära kontakter?'},
+  {t:'write',q:'Skriv hur du avslutar ett mail till en affärskontakt som du börjar bli kompis med.'},
+  {t:'yn',q:'Du anpassar signaturen beroende på om mailet är internt eller externt?'},
+  {t:'write',q:'Vad ska din AI-klon alltid tänka på när den mailar å dina vägnar till en ny kontakt?'},
+  {t:'yn',q:'Du föredrar att alltid cc:a relevant person i stället för att vidarebefordra?'},
+  {t:'write',q:'Beskriv tre relationstyper och hur din ton skiljer sig mellan dem.'},
+  {t:'yn',q:'Du är mer informell med folk du åt lunch med igår än med folk du bara mailat?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en viktig kontakt som du missat att svara på i en vecka.'},
+  {t:'yn',q:'Du undviker att nämna andras namn i mail om det inte är nödvändigt?'},
+  {t:'write',q:'Hur visar du i mail att du värdesätter en relation utan att vara mesig?'},
+  {t:'yn',q:'Du föredrar att vara konsekvent i hur du kommunicerar med samma person?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail där mottagaren missförstått dig.'},
+  {t:'yn',q:'Du är alltid lika professionell mot folk lägre i hierarkin som mot folk högre upp?'},
+  {t:'write',q:'Vad är tre relationsregler din AI-klon måste förstå för att representera dig rätt?'},
+],
+conflict:[
+  {t:'write',q:'Skriv hur du säger nej till en begäran du inte kan eller vill uppfylla. Exempelmail.'},
+  {t:'yn',q:'Du är direkt med nej och ger sällan en lång förklaring?'},
+  {t:'write',q:'Hur hanterar du ett mail från en upprörd klient? Skriv ditt exempelsvar.'},
+  {t:'yn',q:'Du undviker att be om ursäkt om du inte tycker du gjort fel?'},
+  {t:'write',q:'Skriv hur du tar upp ett problem med en kollega som inte levererat i tid.'},
+  {t:'yn',q:'Du föredrar att lösa konflikter via telefon snarare än mail?'},
+  {t:'write',q:'Hur formulerar du dig när du vill säga att något inte är acceptabelt?'},
+  {t:'yn',q:'Du är rakare i mail när du är arg än när du är lugn?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail där någon skyller på dig felaktigt.'},
+  {t:'yn',q:'Du väntar alltid tills du är lugn innan du skickar ett mail i en konflikt?'},
+  {t:'write',q:'Hur sätter du en gräns i mail – utan att låta aggressiv?'},
+  {t:'yn',q:'Du undviker att använda passiv aggressiva fraser som "som jag redan nämnde"?'},
+  {t:'write',q:'Skriv hur du reagerar om någon missar en deadline som påverkar dig.'},
+  {t:'yn',q:'Du föredrar att fokusera på lösning snarare än problem i konfliktmail?'},
+  {t:'write',q:'Hur formulerar du en tydlig förväntan utan att låta kontrollerande?'},
+  {t:'yn',q:'Du erkänner din del av ett missförstånd, även om det inte är ditt fel helt?'},
+  {t:'write',q:'Skriv hur du ber om ursäkt i mail när du faktiskt gjort fel.'},
+  {t:'yn',q:'Din ursäkt är alltid kortfattad och utan överdrivna självanklagelser?'},
+  {t:'write',q:'Hur tar du upp att du är missnöjd med ett samarbete utan att bränna broar?'},
+  {t:'yn',q:'Du sätter alltid en deadline eller nästa steg i ett konfliktmail?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som är direkt otrevligt mot dig.'},
+  {t:'yn',q:'Du svarar alltid professionellt oavsett hur otrevligt avsändaren är?'},
+  {t:'write',q:'Hur hanterar du ett mail där du måste ge kritik till en kollega?'},
+  {t:'yn',q:'Du är mer direkt med kritik till folk du litar på?'},
+  {t:'write',q:'Skriv hur du eskalerar ett problem utan att låta dramatisk.'},
+  {t:'yn',q:'Du undviker att lägga till chefen på cc för att utöva press?'},
+  {t:'write',q:'Hur hanterar du ett mail där du ombeds göra något du tycker är fel?'},
+  {t:'yn',q:'Du är tydlig med dina gränser utan att behöva förklara dem i detalj?'},
+  {t:'write',q:'Skriv hur du tacklar ett mail som innehåller felaktig information om dig.'},
+  {t:'yn',q:'Du föredrar att rätta folk privat snarare än i en mailkedja med flera?'},
+  {t:'write',q:'Hur formulerar du dig när du vill avsluta en diskussion som inte leder någonstans?'},
+  {t:'yn',q:'Du är mer kompromissvillig i mail än i direkta möten?'},
+  {t:'write',q:'Skriv hur du hanterar att någon tar åt sig äran för ditt arbete.'},
+  {t:'yn',q:'Du hanterar konflikter lugnt och metodiskt i mail?'},
+  {t:'write',q:'Hur kommunicerar du att du är missnöjd utan att förstöra relationen?'},
+  {t:'yn',q:'Du inleder sällan ett konfliktmail med kritik direkt?'},
+  {t:'write',q:'Skriv hur du avvisar ett erbjudande du inte är intresserad av.'},
+  {t:'yn',q:'Du är kortfattad i avvisningar och ger sällan för många detaljer?'},
+  {t:'write',q:'Hur reagerar du i mail om ett projekt du drivit kritiseras av en chef?'},
+  {t:'yn',q:'Du tar alltid en paus innan du svarar på ett aggressivt mail?'},
+  {t:'write',q:'Skriv hur du sätter stopp för en mailkonversation som blivit destruktiv.'},
+  {t:'yn',q:'Du föredrar att lösa konflikter snabbt snarare än att låta dem dra ut?'},
+  {t:'write',q:'Hur kommunicerar du i mail att du inte har tid att ta på dig mer?'},
+  {t:'yn',q:'Du är alltid tydlig med vad du faktiskt ber om i ett konfliktmail?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som ifrågasätter din kompetens.'},
+  {t:'yn',q:'Du är trygg nog att inte försvara dig om anklagelsen är osann?'},
+  {t:'write',q:'Hur formulerar du ett mail när du behöver ta upp ett känsligt ämne?'},
+  {t:'yn',q:'Du sätter alltid fakta och sakfrågan i centrum, inte personangrepp?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en kund som hotar lämna.'},
+  {t:'yn',q:'Du hanterar sådana situationer lugnt och utan att lova för mycket?'},
+  {t:'write',q:'Hur skriver du ett mail för att återupprätta en relation efter en konflikt?'},
+  {t:'yn',q:'Du tar det första steget mot försoning om du märker att relationen lidit?'},
+  {t:'write',q:'Skriv hur du säger ifrån om du behandlats respektlöst.'},
+  {t:'yn',q:'Du är bestämd men inte aggressiv när du sätter gränser?'},
+  {t:'write',q:'Hur hanterar du ett mail där du fått kritik du faktiskt håller med om?'},
+  {t:'yn',q:'Du erkänner öppet när du haft fel utan att överdriva?'},
+  {t:'write',q:'Skriv hur du kommunicerar att ett beslut är taget och inte diskutabelt.'},
+  {t:'yn',q:'Du är tydlig med när ett beslut är slutgiltigt?'},
+  {t:'write',q:'Hur hanterar du ett mail från en kontakt som beter sig irrationellt?'},
+  {t:'yn',q:'Du undviker att matcha irrationellt beteende med samma?'},
+  {t:'write',q:'Skriv hur du hanterar en situation där du måste vidarebefordra ett klagomål.'},
+  {t:'yn',q:'Du är neutral och saklig i mailformat, oavsett dina egna känslor?'},
+  {t:'write',q:'Hur kommunicerar du att du behöver mer tid innan du kan svara?'},
+  {t:'yn',q:'Du är alltid transparent om varför du behöver mer tid?'},
+  {t:'write',q:'Skriv hur du avrundar en lång och komplicerad konflikt via mail.'},
+  {t:'yn',q:'Du fokuserar på framåt i stället för att gräva i det som gick fel?'},
+  {t:'write',q:'Hur sätter du tydliga förväntningar utan att låta nedlåtande?'},
+  {t:'yn',q:'Du föredrar att ge folk chansen att rätta till saker innan du eskalerar?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från någon som vill mer av dig än du kan ge.'},
+  {t:'yn',q:'Du är tydlig med dina begränsningar utan att be om ursäkt för dem?'},
+  {t:'write',q:'Hur formulerar du ett mail för att förhindra en missförståndssituation?'},
+  {t:'yn',q:'Du är proaktiv med att klargöra innan konflikter uppstår?'},
+  {t:'write',q:'Skriv tre fraser du aldrig skulle skriva i ett konfliktmail – hur du INTE låter.'},
+  {t:'yn',q:'Du tänker alltid på vad du vill uppnå med mailet innan du skriver?'},
+  {t:'write',q:'Vad är din strategi för att hantera konflikter via mail generellt?'},
+  {t:'yn',q:'Du föredrar att avsluta konfliktmail med en positiv eller konstruktiv mening?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som innehåller en dold agenda.'},
+  {t:'yn',q:'Du adresserar dolda agendor direkt istället för att spela med?'},
+  {t:'write',q:'Hur kommunicerar du konsekvenser om något inte förändras?'},
+  {t:'yn',q:'Du är tydlig med konsekvenser utan att låta hotfull?'},
+  {t:'write',q:'Skriv hur din AI-klon ska hantera ett upprört mail i ditt namn.'},
+  {t:'yn',q:'Du vill att AI:n alltid är lugnare och mer professionell än vad du kanske känt?'},
+  {t:'write',q:'Vad är de tre viktigaste principerna för din AI-klon i konfliktmail?'},
+],
+emotion:[
+  {t:'write',q:'Hur uttrycker du medkänsla i mail utan att låta klyschigart? Skriv ett exempeluttryck.'},
+  {t:'yn',q:'Du är mer emotionell i mail till nära vänner än till affärskontakter?'},
+  {t:'write',q:'Skriv hur du reagerar i mail om en kontakt berättar om ett personligt motgång.'},
+  {t:'yn',q:'Du undviker att använda "Jag förstår hur du känner" i mail?'},
+  {t:'write',q:'Hur uttrycker du entusiasm i mail utan att låta överdrivet?'},
+  {t:'yn',q:'Du är mer återhållsam med känslouttryck i professionella mail?'},
+  {t:'write',q:'Skriv hur du formulerar dig när du vill visa att du bryr dig om någon.'},
+  {t:'yn',q:'Du undviker hjärtaemojis i alla professionella sammanhang?'},
+  {t:'write',q:'Hur reagerar du i mail om du får oväntat bra nyheter?'},
+  {t:'yn',q:'Du är genuint intresserad av hur mottagaren mår, inte bara artig?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från någon som verkar ledsen eller stressad.'},
+  {t:'yn',q:'Du adresserar det emotionella innan du går in på det praktiska?'},
+  {t:'write',q:'Hur uttrycker du uppskattning djupt och genuint – inte bara "tack"?'},
+  {t:'yn',q:'Du är specifik när du ger beröm – säger vad du uppskattade, inte bara "bra jobbat"?'},
+  {t:'write',q:'Skriv hur du svarar på ett mail där någon tackar dig väldigt varmt.'},
+  {t:'yn',q:'Du tar emot beröm med nåd, utan att avfärda det?'},
+  {t:'write',q:'Hur formulerar du dig när du vill motivera någon som verkar ha tappat gnistan?'},
+  {t:'yn',q:'Du är känslig för signaler om att någon har det svårt, även i professionella mail?'},
+  {t:'write',q:'Skriv hur du reagerar i mail om en kollega ber om stöd i ett svårt läge.'},
+  {t:'yn',q:'Du är praktisk och lösningsorienterad snarare än bara emotionellt stöttande?'},
+  {t:'write',q:'Hur visar du i mail att du tar någons oro på allvar?'},
+  {t:'yn',q:'Du undviker att minimera andras problem med fraser som "Det ordnar sig"?'},
+  {t:'write',q:'Skriv hur du formulerar ett uppmuntrande mail till någon som är osäker.'},
+  {t:'yn',q:'Din naturliga röst i uppmuntrande mail är varm men inte överdrivet?'},
+  {t:'write',q:'Hur hanterar du ett mail med emotionellt tung information som du måste vidarebefordra?'},
+  {t:'yn',q:'Du lägger alltid till ett mänskligt ord om innehållet är svårt?'},
+  {t:'write',q:'Skriv hur du reagerar i mail om du fått reda på att en kontakt mist någon nära.'},
+  {t:'yn',q:'Du är kortfattad men varm i kondoleanser?'},
+  {t:'write',q:'Hur uttrycker du i mail att du är stolt över någon?'},
+  {t:'yn',q:'Du är specifik och personlig när du berömmer, inte generisk?'},
+  {t:'write',q:'Skriv hur du formulerar en lyckönskning på ett sätt som känns genuint.'},
+  {t:'yn',q:'Du undviker klyscheiga lyckönnskningsfraser?'},
+  {t:'write',q:'Hur hanterar du ett mail från någon som är besviken på dig?'},
+  {t:'yn',q:'Du adresserar känslorna utan att bli defensiv?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail där avsändaren verkar vara i kris.'},
+  {t:'yn',q:'Du hänvisar till rätt hjälp utan att ta på dig mer än du kan?'},
+  {t:'write',q:'Hur formulerar du dig när du vill visa att du respekterar någons gränser?'},
+  {t:'yn',q:'Du är alltid respektfull om mottagaren säger att de inte vill diskutera något?'},
+  {t:'write',q:'Skriv hur du bemöter ett mail som innehåller tydlig frustration mot dig.'},
+  {t:'yn',q:'Du svarar lugnt och validerar deras känsla utan att gå i försvar direkt?'},
+  {t:'write',q:'Hur formulerar du dig i mail när du är stolt men vill vara ödmjuk?'},
+  {t:'yn',q:'Du balanserar självförtroende med ödmjukhet i ditt skrivande?'},
+  {t:'write',q:'Skriv hur du uttrycker sorg eller besvikelse professionellt i mail.'},
+  {t:'yn',q:'Du delar sällan egna känslouttryck i professionella mail?'},
+  {t:'write',q:'Hur formulerar du dig när du vill skapa ett tryggt utrymme för ett svårt samtal?'},
+  {t:'yn',q:'Du föreslår alltid att ta känsliga saker via telefon om möjligt?'},
+  {t:'write',q:'Skriv hur du reagerar i mail om du är genuint rörd av vad någon skrivit.'},
+  {t:'yn',q:'Du tillåter dig att vara personlig och ärlig om du faktiskt är rörd?'},
+  {t:'write',q:'Hur hanterar du ett mail från en person som verkar ensam och söker kontakt?'},
+  {t:'yn',q:'Du svarar alltid vänligt även om du inte kan ge dem vad de söker?'},
+  {t:'write',q:'Skriv hur du avvisar en begäran på ett sätt som inte gör mottagaren ledsen.'},
+  {t:'yn',q:'Du är empatisk i avvisningar – förklarar varför och önskar dem gott?'},
+  {t:'write',q:'Hur balanserar du professionalism och mänsklighet i mail?'},
+  {t:'yn',q:'Du tycker det är viktigt att mottagaren känner sig sedd, inte bara svarad?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail med ett misstag som påverkat en relation.'},
+  {t:'yn',q:'Du tar ansvar snabbt och fokuserar på reparationen?'},
+  {t:'write',q:'Hur formulerar du ett mail som ska lyfta någons dag?'},
+  {t:'yn',q:'Du tror att ett välformulerat mail kan vända en dags humör?'},
+  {t:'write',q:'Skriv hur du lägger in en personlig touch i ett annars professionellt mail.'},
+  {t:'yn',q:'Du tror att personlighet i mail bygger starkare relationer?'},
+  {t:'write',q:'Hur hanterar du mail under perioder då du mår dåligt men ändå måste svara?'},
+  {t:'yn',q:'Du är extra noga med tonen när du mår dåligt?'},
+  {t:'write',q:'Skriv hur du visar tacksamhet mot någon som lagt ned stor omsorg på något.'},
+  {t:'yn',q:'Du är specifik och detaljerad i tacksamhetsuttryck för att det ska kännas genuint?'},
+  {t:'write',q:'Hur reagerar du i mail om du märker att mottagaren fattat galopp?'},
+  {t:'yn',q:'Du korrigerar missförstånd vänligt och utan att göra dem till en stor sak?'},
+  {t:'write',q:'Skriv hur din AI-klon ska hantera emotionellt laddade mail i ditt namn.'},
+  {t:'yn',q:'Du vill att AI:n alltid lägger in ett mänskligt ord när ämnet är känsligt?'},
+  {t:'write',q:'Beskriv hur du vill att din AI-klon ska balansera värme och professionalism.'},
+  {t:'yn',q:'Du föredrar att AI:n är lite för varm snarare än lite för kall?'},
+  {t:'write',q:'Vad är tre känslouttryck din AI-klon ska undvika i ditt namn?'},
+  {t:'yn',q:'Du vill att AI:n aldrig ska be om ursäkt för din räkning utan att du bekräftat felet?'},
+  {t:'write',q:'Skriv det bästa exempelmailet du kan på hur du kombinerar empati och professionalism.'},
+  {t:'yn',q:'Du tror att en varm ton i mail bygger lojalitet på lång sikt?'},
+  {t:'write',q:'Vad är det emotionella avtrycket du vill lämna hos mottagaren efter varje mail?'},
+  {t:'yn',q:'Du vill att folk alltid ska känna sig respekterade och sedda i mail från dig?'},
+  {t:'write',q:'Hur vill du att din AI-klon ska kännas – som en assistent eller som du?'},
+  {t:'yn',q:'Du föredrar att AI:n känns som du, inte som en professionell tjänst?'},
+  {t:'write',q:'Beskriv det mest mänskliga och äkta mailet du kan tänka dig att din klon skriver.'},
+],
+structure:[
+  {t:'write',q:'Skriv hur ett typiskt mail från dig ser ut strukturmässigt – hur många stycken, hur lång?'},
+  {t:'yn',q:'Du använder nästan alltid en ämnesrad som exakt beskriver mailinnehållet?'},
+  {t:'write',q:'Hur formulerar du ämnesrader – ge tre exempel på typiska ämnesrader du skriver.'},
+  {t:'yn',q:'Du sätter alltid det viktigaste i första meningen?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail med flera frågor eller punkter.'},
+  {t:'yn',q:'Du föredrar punktlistor framför långa stycken med kommatecken?'},
+  {t:'write',q:'Hur lång är ett typiskt mail från dig i antal ord? Ge ett intervall.'},
+  {t:'yn',q:'Du anpassar alltid mailens längd efter ärendets komplexitet?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail som ska sammanfatta ett möte.'},
+  {t:'yn',q:'Du inkluderar alltid ett tydligt "action item" eller nästa steg om det krävs?'},
+  {t:'write',q:'Hur hanterar du mail med bifogade filer – vad skriver du i mailbodyn?'},
+  {t:'yn',q:'Du beskriver alltid bifogade filer kortfattat i mailet?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail med komplex information tydligt.'},
+  {t:'yn',q:'Du föredrar att ha en sak per mail snarare än att bunta ihop många ärenden?'},
+  {t:'write',q:'Hur formulerar du en ämnesrad som kräver svar vs en som bara informerar?'},
+  {t:'yn',q:'Du markerar tydligt om ett mail kräver svar och när?'},
+  {t:'write',q:'Skriv hur du formaterar ett mail med datum, klockslag och platser tydligt.'},
+  {t:'yn',q:'Du är konsekvent med hur du formaterar tid och datum?'},
+  {t:'write',q:'Hur hanterar du långa mailkedjor – svarar du inline eller i ett nytt stycke?'},
+  {t:'yn',q:'Du sammanfattar ibland långa kedjor för att ge tydlighet?'},
+  {t:'write',q:'Skriv hur du formaterar ett mail som ska gå till 10+ mottagare.'},
+  {t:'yn',q:'Du anpassar strukturen om mailet ska läsas av en bred grupp?'},
+  {t:'write',q:'Hur organiserar du information i ett mail som ska fungera som referens framöver?'},
+  {t:'yn',q:'Du strukturerar referensmail med tydliga rubriker eller numrering?'},
+  {t:'write',q:'Skriv hur du formaterar ett mail med en tydlig deadline.'},
+  {t:'yn',q:'Du fetstillar eller kursiverar deadlines ibland för att betona dem?'},
+  {t:'write',q:'Hur hanterar du mail som kräver ett enkelt ja eller nej – hur formulerar du frågan?'},
+  {t:'yn',q:'Du formulerar alltid ja/nej-frågor tydligt och separat?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail som presenterar ett nytt förslag.'},
+  {t:'yn',q:'Du presenterar alltid kontext, förslag och önskat nästa steg i den ordningen?'},
+  {t:'write',q:'Hur formaterar du ett mail med kod, data eller teknisk information?'},
+  {t:'yn',q:'Du separerar teknisk data tydligt från brödtext?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail till en person du ska träffa för första gången.'},
+  {t:'yn',q:'Du inkluderar alltid praktisk information (plats, tid) tydligt i sådana mail?'},
+  {t:'write',q:'Hur hanterar du ett mail som ska fungera som ett formellt dokument?'},
+  {t:'yn',q:'Du är mer noggrann med struktur och layout i formella mail?'},
+  {t:'write',q:'Skriv hur du formaterar ett mail med en uppdatering om ett pågående projekt.'},
+  {t:'yn',q:'Du inkluderar alltid vad som gjorts, vad som återstår och nästa steg?'},
+  {t:'write',q:'Hur väljer du om du ska skriva ett kort eller ett långt mail?'},
+  {t:'yn',q:'Du föredrar alltid att välja kortare om du är osäker?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail som ska delegera en uppgift.'},
+  {t:'yn',q:'Du är alltid tydlig med vem som ansvarar för vad?'},
+  {t:'write',q:'Hur hanterar du mail som blandar positivt och negativt – hur strukturerar du?'},
+  {t:'yn',q:'Du sätter det positiva innan det negativa?'},
+  {t:'write',q:'Skriv hur du formaterar ett introduktionsmail mellan två kontakter.'},
+  {t:'yn',q:'Du inkluderar alltid en kort beskrivning av varje person och varför de bör prata?'},
+  {t:'write',q:'Hur strukturerar du ett mail med en komplex fråga du behöver svar på?'},
+  {t:'yn',q:'Du delar upp komplexa frågor i numrerade delfrågor?'},
+  {t:'write',q:'Skriv hur din signatur ser ut exakt – vad ingår?'},
+  {t:'yn',q:'Du har en kortare signatur i interna mail och längre i externa?'},
+  {t:'write',q:'Hur hanterar du vidarebefordringar strukturellt – skriver du ett förord?'},
+  {t:'yn',q:'Du skriver alltid ett kort förord när du vidarebefordrar?'},
+  {t:'write',q:'Skriv hur du strukturerar ett tackmail som också har ett syfte utöver tackandet.'},
+  {t:'yn',q:'Du blandar aldrig ihop tackandet med annan agenda i onödan?'},
+  {t:'write',q:'Hur hanterar du mail med bilder eller diagram – hur beskriver du dem?'},
+  {t:'yn',q:'Du refererar alltid till bilagor i texten?'},
+  {t:'write',q:'Skriv ett exempelmail som visar din optimala mailstruktur från hälsning till avslutning.'},
+  {t:'yn',q:'Du tycker din naturliga struktur är tydlig nog för alla mottagartyper?'},
+  {t:'write',q:'Hur väljer du om du ska svara inline eller skriva ett nytt mail?'},
+  {t:'yn',q:'Du föredrar att svara inline för snabba svar och skriva nytt för komplexa?'},
+  {t:'write',q:'Skriv hur du strukturerar ett mail som kräver ett snabbt svar men är komplext.'},
+  {t:'yn',q:'Du är tydlig med att det kräver snabbt svar direkt i ämnesraden?'},
+  {t:'write',q:'Hur hanterar du mail på engelska strukturmässigt – annorlunda än svenska?'},
+  {t:'yn',q:'Din engelska mailstruktur är mer komprimerad än din svenska?'},
+  {t:'write',q:'Skriv hur du formaterar ett mail med en lista av rekommendationer.'},
+  {t:'yn',q:'Du numrerar alltid rekommendationer och rangordnar dem?'},
+  {t:'write',q:'Hur hanterar du mail med känslig information strukturellt?'},
+  {t:'yn',q:'Du undviker att inkludera känslig information i ämnesraden?'},
+  {t:'write',q:'Beskriv de tre strukturella principerna din AI-klon alltid ska följa.'},
+  {t:'yn',q:'Du vill att AI:n alltid strukturerar mail med tydligt syfte, innehåll och nästa steg?'},
+  {t:'write',q:'Vad är den vanligaste strukturella misstaget du ser i andras mail?'},
+  {t:'yn',q:'Du föredrar att all viktig information ryms på en skärm utan scrollning?'},
+  {t:'write',q:'Skriv ett mail som är dåligt strukturerat – och sedan samma mail rätt strukturerat.'},
+  {t:'yn',q:'Du tror att struktur är lika viktigt som innehåll i ett bra mail?'},
+  {t:'write',q:'Vad är din personliga regel för när ett mail är för långt?'},
+  {t:'yn',q:'Du föredrar att dela upp ett långt ärende i två kortare mail?'},
+  {t:'write',q:'Beskriv hur din AI-klon ska avgöra om ett mail ska vara kort eller långt.'},
+],
+values:[
+  {t:'write',q:'Vad är en åsikt du alltid är tydlig med i mail, oavsett vem mottagaren är?'},
+  {t:'yn',q:'Du är öppen med dina ståndpunkter i professionell kommunikation?'},
+  {t:'write',q:'Skriv hur du kommunicerar ett beslut du fattat som du vet folk kanske inte gillar.'},
+  {t:'yn',q:'Du motiverar alltid beslut du vet kan möta motstånd?'},
+  {t:'write',q:'Vad skriver du ALDRIG i mail, oavsett kontext?'},
+  {t:'yn',q:'Du håller en etisk linje i din kommunikation oavsett press?'},
+  {t:'write',q:'Skriv hur du kommunicerar dina värderingar utan att låta predikande.'},
+  {t:'yn',q:'Du låter dina värderingar synas i hur du behandlar mottagaren, inte i vad du säger?'},
+  {t:'write',q:'Hur reagerar du i mail om du ombeds göra något som strider mot dina principer?'},
+  {t:'yn',q:'Du är tydlig med varför du inte kan göra något, inte bara att du inte kan?'},
+  {t:'write',q:'Skriv hur du kommunicerar ärlighet när det gör ont – en svår sanning.'},
+  {t:'yn',q:'Du väljer alltid ärlighet framför att undvika obehag, även i mail?'},
+  {t:'write',q:'Hur visar du respekt för mottagarens tid i hur du skriver dina mail?'},
+  {t:'yn',q:'Du är alltid kortfattad om det handlar om respekt för mottagarens tid?'},
+  {t:'write',q:'Vad är din policy kring att erkänna misstag i mail?'},
+  {t:'yn',q:'Du erkänner alltid misstag direkt och konkret?'},
+  {t:'write',q:'Skriv hur du kommunicerar lojalitet mot en kollega i ett mail.'},
+  {t:'yn',q:'Du backar upp kollegor öppet i mail om de behandlats orättvist?'},
+  {t:'write',q:'Hur kommunicerar du i mail att du inte vill kompromissa på kvalitet?'},
+  {t:'yn',q:'Du är tydlig med kvalitetskrav utan att låta perfektionistisk?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som ber dig vara oärlig eller vilseledande.'},
+  {t:'yn',q:'Du avvisar alltid uppmaningar till oärlighet, även om det kostar dig?'},
+  {t:'write',q:'Hur kommunicerar du transparens i mail – vad delar du och vad håller du för dig?'},
+  {t:'yn',q:'Du är mer transparent än de flesta i liknande positioner?'},
+  {t:'write',q:'Skriv hur du i mail visar att du ser och värdesätter andras bidrag.'},
+  {t:'yn',q:'Du lyfter alltid fram andras arbete, inte bara ditt eget?'},
+  {t:'write',q:'Hur kommunicerar du rättvisa i mail – t.ex. om resurser fördelas?'},
+  {t:'yn',q:'Du är alltid lika tydlig med rättigheter och ansvar, inte bara skyldigheter?'},
+  {t:'write',q:'Skriv hur du kommunicerar att något är oacceptabelt utan att vara aggressiv.'},
+  {t:'yn',q:'Du sätter alltid gränser respektfullt men bestämt?'},
+  {t:'write',q:'Hur visar du i mail att du är pålitlig och håller vad du lovar?'},
+  {t:'yn',q:'Du lovar aldrig något du inte kan hålla i mail?'},
+  {t:'write',q:'Skriv hur du kommunicerar i mail att du är engagerad i ett projekt.'},
+  {t:'yn',q:'Ditt engagemang syns tydligt i hur du formulerar dig?'},
+  {t:'write',q:'Hur hanterar du i mail situationer där någon behandlas orättvist?'},
+  {t:'yn',q:'Du agerar alltid om du ser orättvisa, även om det inte direkt berör dig?'},
+  {t:'write',q:'Skriv hur du kommunicerar ödmjukhet utan att underskatta dig själv.'},
+  {t:'yn',q:'Du balanserar självförtroende och ödmjukhet i ditt skrivande?'},
+  {t:'write',q:'Hur kommunicerar du i mail att du tar ansvar för något som gått fel?'},
+  {t:'yn',q:'Du tar fullt ansvar utan att skylla på externa faktorer?'},
+  {t:'write',q:'Skriv hur din AI-klon ska kommunicera dina värderingar i mail.'},
+  {t:'yn',q:'Du vill att AI:n alltid ska prioritera ärlighet och respekt, oavsett situation?'},
+  {t:'write',q:'Vad är de tre värderingar som alltid ska synas i mail från dig?'},
+  {t:'yn',q:'Du tycker att en persons värderingar alltid lyser igenom i hur de kommunicerar?'},
+  {t:'write',q:'Skriv ett exempelmail som visar dina kärnvärderingar i handling.'},
+  {t:'yn',q:'Du vill att mottagare ska känna sig respekterade och ärligt bemötta?'},
+  {t:'write',q:'Hur kommunicerar du integritet i mail – att du är den du säger att du är?'},
+  {t:'yn',q:'Du är konsekvent i dina värderingar oavsett vem mottagaren är?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail där du pressas att kompromissa med dina värderingar.'},
+  {t:'yn',q:'Du håller dina värderingar intakta oavsett yttre tryck?'},
+  {t:'write',q:'Vad kommunicerar du i mail som visar att du är mer än bara professionell?'},
+  {t:'yn',q:'Du visar att du är en hel människa, inte bara en yrkesroll, i dina mail?'},
+  {t:'write',q:'Skriv hur du kommunicerar tacksamhet på ett sätt som återspeglar vem du är.'},
+  {t:'yn',q:'Din tacksamhet är alltid specifik och äkta, aldrig generisk?'},
+  {t:'write',q:'Hur hanterar du i mail situationer där du måste välja mellan lojalitet och ärlighet?'},
+  {t:'yn',q:'Du väljer alltid ärlighet, även om det kompromissar med lojalitet?'},
+  {t:'write',q:'Skriv hur du kommunicerar att du är öppen för att ha fel.'},
+  {t:'yn',q:'Du är genuint öppen för motargument i din kommunikation?'},
+  {t:'write',q:'Beskriv hur dina värderingar syns i din dagliga mailkommunikation.'},
+  {t:'yn',q:'Du tror att autentisk kommunikation är mer effektiv än strategisk?'},
+  {t:'write',q:'Vad ska din AI-klon ALDRIG göra som skulle strida mot dina värderingar?'},
+  {t:'yn',q:'Du vill att AI:n alltid ska välja den ärligaste och mest respektfulla formuleringen?'},
+  {t:'write',q:'Skriv det mail som bäst representerar vem du är och vad du står för.'},
+  {t:'yn',q:'Du tror att dessa frågor gett AI:n tillräckligt för att förstå dina värderingar?'},
+  {t:'write',q:'Vad är den viktigaste värderingen AI:n måste ha förstått efter detta quiz?'},
+  {t:'yn',q:'Du är nöjd med hur dina värderingar kommuniceras i dina mail generellt?'},
+  {t:'write',q:'Beskriv i ett stycke vad som gör din kommunikation etisk och äkta.'},
+  {t:'yn',q:'Du tror att en AI kan lära sig dina värderingar om den tränas rätt?'},
+  {t:'write',q:'Skriv tre konkreta exempel på hur dina värderingar syns i mail du skickat.'},
+  {t:'yn',q:'Du är stolt över hur du kommunicerar och vill att din klon ska spegla det?'},
+  {t:'write',q:'Vad är den sista instruktionen du vill ge din AI-klon om dina värderingar?'},
+],
+humor:[
+  {t:'write',q:'Skriv ett exempelmail där du använder humor på ett sätt som är typiskt för dig.'},
+  {t:'yn',q:'Du använder humor i professionella mail ibland?'},
+  {t:'write',q:'Beskriv din humor – torr, självdistanserad, absurd, situationskomisk?'},
+  {t:'yn',q:'Din humor är mer subtil än explicit?'},
+  {t:'write',q:'Skriv en mening som visar din typiska ironi i ett mail.'},
+  {t:'yn',q:'Du använder ironi i mail men är försiktig med vem du skickar det till?'},
+  {t:'write',q:'Vilken typ av humor undviker du absolut i mail?'},
+  {t:'yn',q:'Du undviker humor som kan misstolkas i skrift?'},
+  {t:'write',q:'Skriv hur du bryter isen med en ny kontakt – använder du humor?'},
+  {t:'yn',q:'Du testar humorvatten tidigt i en relation?'},
+  {t:'write',q:'Beskriv en gång humorn i ett mail faktiskt gjort skillnad i en relation.'},
+  {t:'yn',q:'Du tror att rätt humor bygger förtroende snabbare än formalism?'},
+  {t:'write',q:'Skriv ett exempelmail med en underfundig kommentar som är typisk för dig.'},
+  {t:'yn',q:'Du gillar mer underfundig humor än direkt?'},
+  {t:'write',q:'Hur vet du om det är okej att använda humor med en specifik kontakt?'},
+  {t:'yn',q:'Du speglar mottagarens ton om de är humoristiska?'},
+  {t:'write',q:'Skriv hur din humor skiljer sig på svenska vs engelska i mail.'},
+  {t:'yn',q:'Din humor är mer avslappnad på svenska?'},
+  {t:'write',q:'Vad är ditt bästa exempel på en lyckad humoristisk mening i ett mail?'},
+  {t:'yn',q:'Du kan hitta humor i svåra situationer utan att vara respektlös?'},
+  {t:'write',q:'Skriv hur du använder självdistans i mail – skämtar du om dig själv?'},
+  {t:'yn',q:'Du skämtar om dig själv ibland för att verka mer mänsklig?'},
+  {t:'write',q:'Beskriv hur din personlighet syns i dina mail bortom humor.'},
+  {t:'yn',q:'Du tror att personlighet i mail gör dig mer minnesvärd?'},
+  {t:'write',q:'Skriv en mening som visar din karaktär utan att vara humoristisk.'},
+  {t:'yn',q:'Din personlighet syns även i hur du formulerar sakliga mail?'},
+  {t:'write',q:'Hur mycket av din personlighet visar du i mail till folk du inte känner?'},
+  {t:'yn',q:'Du håller personligheten mer dämpad med nya kontakter?'},
+  {t:'write',q:'Skriv ett mail där din personlighet lyser igenom tydligt.'},
+  {t:'yn',q:'Du tycker dina mail generellt speglar vem du är?'},
+  {t:'write',q:'Beskriv tre personlighetsdrag som alltid syns i hur du skriver.'},
+  {t:'yn',q:'Du är konsekvent i personligheten oavsett ämne?'},
+  {t:'write',q:'Skriv hur du visar nyfikenhet i ett mail.'},
+  {t:'yn',q:'Du ställer ofta följdfrågor för att visa genuint intresse?'},
+  {t:'write',q:'Hur visar du att du är engagerad och driven i hur du formulerar dig?'},
+  {t:'yn',q:'Ditt engagemang syns tydligt utan att du behöver säga "Jag är engagerad"?'},
+  {t:'write',q:'Skriv hur du visar kreativitet i ett mail utan att gå utanför ramarna.'},
+  {t:'yn',q:'Du hittar ibland kreativa formuleringar istället för standardfraser?'},
+  {t:'write',q:'Beskriv hur du visar att du är en person som tar ansvar i hur du kommunicerar.'},
+  {t:'yn',q:'Ansvarsfullhet syns i hur du formulerar åtaganden?'},
+  {t:'write',q:'Skriv hur du visar generositet i ett mail.'},
+  {t:'yn',q:'Du är generös med tid, beröm och information i dina mail?'},
+  {t:'write',q:'Hur visar du i mail att du är en person som litar på andra?'},
+  {t:'yn',q:'Du delegerar och ger förtroende utan att micromanagea i mail?'},
+  {t:'write',q:'Skriv ett mail som visar din direkthet – att du går rakt på sak.'},
+  {t:'yn',q:'Din direkthet är en av de tydligaste sidorna av din kommunikation?'},
+  {t:'write',q:'Beskriv hur du visar intellektuell nyfikenhet i mail.'},
+  {t:'yn',q:'Du refererar ibland till saker du läst, sett eller tänkt på i mail?'},
+  {t:'write',q:'Skriv hur du visar att du är en person med höga krav – på dig själv och andra.'},
+  {t:'yn',q:'Dina höga krav syns utan att du behöver säga dem explicit?'},
+  {t:'write',q:'Hur visar du i mail att du är en person som faktiskt lyssnar?'},
+  {t:'yn',q:'Du refererar till saker mottagaren sagt tidigare för att visa att du lyssnat?'},
+  {t:'write',q:'Skriv ett mail som visar din omtanke om mottagaren.'},
+  {t:'yn',q:'Omtanke är en central del av din kommunikationsstil?'},
+  {t:'write',q:'Beskriv de tre personlighetsdrag din AI-klon MÅSTE förmedla i varje mail.'},
+  {t:'yn',q:'Du vill att AI:n ska låta som dig på en dag då du är som mest dig själv?'},
+  {t:'write',q:'Vad är det unika med din röst i mail som ingen annan har?'},
+  {t:'yn',q:'Du tror att din mailröst är igenkännbar för de som känner dig?'},
+  {t:'write',q:'Skriv tre mail-opener som bara du skulle skriva – ditt unika sätt att börja.'},
+  {t:'yn',q:'Du har en igenkännbar öppningsstil?'},
+  {t:'write',q:'Vad är det du hoppas att mottagaren ska tänka om dig efter att ha läst ditt mail?'},
+  {t:'yn',q:'Du vill uppfattas som kompetent, varm och direkt?'},
+  {t:'write',q:'Skriv hur din AI-klon ska fånga din humor och personlighet i ett mail.'},
+  {t:'yn',q:'Du föredrar att AI:n tar en liten personlig risk för att låta som dig?'},
+  {t:'write',q:'Beskriv det perfekta mailet som låter 100% som dig – vad gör det unikt?'},
+  {t:'yn',q:'Du tror att det är möjligt för en AI att fånga din röst om den tränas rätt?'},
+  {t:'write',q:'Vad är det sista du vill att din AI-klon ska ha förstått om dig efter detta quiz?'},
+  {t:'yn',q:'Du tror att dessa frågor har gett din klon tillräckligt för att låta som dig?'},
+  {t:'write',q:'Skriv ett sista mail från dig – som ett brev till din AI-klon om vem du är.'},
+  {t:'yn',q:'Du är redo att lita på din klon efter att ha svarat på alla dessa frågor?'},
+  {t:'write',q:'Sammanfatta din kommunikationsstil på max tre meningar.'},
+  {t:'yn',q:'Du tror att en AI tränad på dessa svar kan representera dig väl?'},
+  {t:'write',q:'Vad är det absolut viktigaste din AI-klon måste veta om hur du låter?'},
+],
+context:[
+  {t:'write',q:'Skriv hur du hanterar ett mail du fick på semestern som kräver svar.'},
+  {t:'yn',q:'Du svarar på mail under semestern om det är tillräckligt viktigt?'},
+  {t:'write',q:'Hur skriver du ett autosvar för semester? Skriv exakt vad du skulle skriva.'},
+  {t:'yn',q:'Ditt autosvar ger alltid ett alternativ – en person att kontakta?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail skickat kl 23 från en kollega – svarar du?'},
+  {t:'yn',q:'Du svarar inte på mail efter arbetstid om det inte är akut?'},
+  {t:'write',q:'Hur hanterar du mail som kräver ett längre svar när du har bråttom?'},
+  {t:'yn',q:'Du skickar alltid ett kort "Återkommer snart" istället för att ignorera?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail på ett språk du inte fullt behärskar.'},
+  {t:'yn',q:'Du svarar på det språk mottagaren skriver på om du kan?'},
+  {t:'write',q:'Hur hanterar du ett mail som skickats av misstag till dig?'},
+  {t:'yn',q:'Du informerar alltid avsändaren om felskickning?'},
+  {t:'write',q:'Skriv hur du hanterar ett cc:at mail du inte behöver agera på.'},
+  {t:'yn',q:'Du svarar sällan på mail du bara är cc:ad på?'},
+  {t:'write',q:'Hur hanterar du ett mail som är relevant men skickat till fel person?'},
+  {t:'yn',q:'Du vidarebefordrar alltid med ett förord?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail om en kris eller akut situation.'},
+  {t:'yn',q:'Du svarar snabbt och kort vid kriser – ringer du sedan?'},
+  {t:'write',q:'Hur hanterar du mail som du fått men inte är redo att svara på?'},
+  {t:'yn',q:'Du flaggar sådana mail för att återkomma till dem?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som kräver ett gruppdeslut.'},
+  {t:'yn',q:'Du kallar alltid till möte för beslut som kräver konsensus istället för mail?'},
+  {t:'write',q:'Hur hanterar du mail med bifogad fil du inte kan öppna?'},
+  {t:'yn',q:'Du informerar alltid avsändaren om tekniska problem med bilagor?'},
+  {t:'write',q:'Skriv hur du hanterar en situation där du mailat fel person.'},
+  {t:'yn',q:'Du skickar alltid ett mail med ursäkt och förklaring om du mailat fel?'},
+  {t:'write',q:'Hur hanterar du mail om du är sjuk och inte kan prestera fullt?'},
+  {t:'yn',q:'Du kommunicerar alltid öppet om du är sjuk och det påverkar leveransen?'},
+  {t:'write',q:'Skriv hur du hanterar mail under en intensiv projektperiod.'},
+  {t:'yn',q:'Du sätter tydliga förväntningar om svarstid under intensiva perioder?'},
+  {t:'write',q:'Hur hanterar du ett mail som kräver ett beslut du inte har mandat att ta?'},
+  {t:'yn',q:'Du eskalerar alltid tydligt och med rätt information?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail med känslig personlig information.'},
+  {t:'yn',q:'Du behandlar alltid känslig information med extra omsorg?'},
+  {t:'write',q:'Hur hanterar du ett mail som är skrivet på ett provocerande sätt?'},
+  {t:'yn',q:'Du svarar alltid lugnare än vad tonen i mailet kräver?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en journalist eller media.'},
+  {t:'yn',q:'Du är alltid extra försiktig med vad du skriver till media?'},
+  {t:'write',q:'Hur hanterar du ett mail med juridiska implikationer?'},
+  {t:'yn',q:'Du konsulterar alltid rätt person innan du svarar på juridiskt känsliga mail?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail om ett ämne du inte är expert på.'},
+  {t:'yn',q:'Du erkänner alltid öppet när du inte har fullständig kunskap?'},
+  {t:'write',q:'Hur hanterar du ett mass-mail som ber om din uppmärksamhet?'},
+  {t:'yn',q:'Du svarar sällan på mass-mail om det inte är nödvändigt?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en VD eller högsta ledningen.'},
+  {t:'yn',q:'Du svarar alltid snabbt och kortfattat till ledningen?'},
+  {t:'write',q:'Hur hanterar du ett mail som verkar vara ett nätfiske- eller bluffmail?'},
+  {t:'yn',q:'Du vidarebefordrar alltid misstänkta mail till rätt säkerhetsperson?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som kräver input från flera kollegor.'},
+  {t:'yn',q:'Du koordinerar alltid internt innan du svarar externt?'},
+  {t:'write',q:'Hur hanterar du mail under en reorg eller förändring i organisationen?'},
+  {t:'yn',q:'Du är extra tydlig och lugn i mail under osäkra tider?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail som kräver svar inom en timme.'},
+  {t:'yn',q:'Du prioriterar alltid och svarar om det är genuint brådskande?'},
+  {t:'write',q:'Hur hanterar du ett mail från en konkurrent som kontaktar dig?'},
+  {t:'yn',q:'Du är alltid artig men försiktig med vad du delar med konkurrenter?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail med en förfrågan du fått tio gånger förut.'},
+  {t:'yn',q:'Du svarar alltid lika hängivet oavsett hur många gånger du fått frågan?'},
+  {t:'write',q:'Hur hanterar du ett mail som kom in under en ledig dag?'},
+  {t:'yn',q:'Du bestämmer alltid i förväg om du ska kolla mail på lediga dagar?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail med felaktig information om dig eller ditt arbete.'},
+  {t:'yn',q:'Du korrigerar alltid felaktigheter direkt och tydligt?'},
+  {t:'write',q:'Hur hanterar du ett mail som blandar personliga och professionella ärenden?'},
+  {t:'yn',q:'Du separerar dem alltid i ditt svar?'},
+  {t:'write',q:'Skriv hur du hanterar ett mail från en klient i en annan tidszon.'},
+  {t:'yn',q:'Du är alltid medveten om tidszoner och anger det om relevant?'},
+  {t:'write',q:'Hur hanterar du ett mail som kräver ett möte men du har fullt schema?'},
+  {t:'yn',q:'Du erbjuder alltid ett alternativt datum eller en kortare kallning?'},
+  {t:'write',q:'Beskriv din generella filosofi för hur du hanterar mail i svåra situationer.'},
+  {t:'yn',q:'Din filosofi är: lugn, tydlighet och respekt oavsett kontext?'},
+  {t:'write',q:'Vad är tre situationer din AI-klon måste ha speciella regler för?'},
+  {t:'yn',q:'Du vill att AI:n ska be om din bekräftelse i ovanliga eller känsliga situationer?'},
+  {t:'write',q:'Skriv en sista instruktion till din AI-klon om hur den ska hantera oväntade situationer.'},
+  {t:'yn',q:'Du är nöjd med hur din AI-klon nu förstår hur du hanterar olika mailsituationer?'},
+  {t:'write',q:'Vad är den viktigaste kontextuella regeln din AI-klon alltid måste komma ihåg?'},
+  {t:'yn',q:'Du tror att din klon nu kan hantera de flesta mailsituationer som du?'},
+  {t:'write',q:'Beskriv tre specifika situationer och exakt hur din klon ska agera i varje.'},
+  {t:'yn',q:'Du är redo att låta din klon ta hand om din inkorg?'},
+  {t:'write',q:'Skriv det sista rådet du vill ge din AI-klon innan den börjar svara mail åt dig.'},
+]
+};
+
+const TOTAL = 900;
+let catProgress = {}, catMemories = {}, quizState = null;
+
+CATS.forEach(c => {
+  try { catProgress[c.id] = JSON.parse(localStorage.getItem('bc3_' + c.id)) || {answers:{},done:false}; } catch(e) { catProgress[c.id] = {answers:{},done:false}; }
+  catMemories[c.id] = localStorage.getItem('bc3_mem_' + c.id) || '';
+});
+
+function getCount(cat) { return Object.keys(catProgress[cat].answers).length; }
+function getTotalAnswered() { return CATS.reduce((s,c) => s + getCount(c.id), 0); }
+function getStatus(cat) { const n = getCount(cat); if (!n) return 'none'; if (catProgress[cat].done) return 'done'; return 'started'; }
+function saveProgress(catId) { localStorage.setItem('bc3_' + catId, JSON.stringify(catProgress[catId])); }
+
+function renderDashboard() {
+  const total = getTotalAnswered();
+  document.getElementById('total-num').textContent = total + ' / ' + TOTAL + ' frågor';
+  document.getElementById('total-fill').style.width = Math.round(total/TOTAL*100) + '%';
+  document.getElementById('cat-grid').innerHTML = CATS.map(c => {
+    const n = getCount(c.id), status = getStatus(c.id);
+    const sc = status==='done' ? '#4ade80' : status==='started' ? '#a78bfa' : '#555';
+    const sl = status==='done' ? 'Klar' : n + ' / 100';
+    const cc = 'cat-card' + (status==='done' ? ' done' : status==='started' ? ' started' : '');
+    const circ = 2*Math.PI*16, off = circ*(1-n/100);
+    const rc = status==='done' ? '#4ade80' : '#a78bfa';
+    const bc = status==='done' ? 'cat-btn done-btn' : 'cat-btn';
+    const bt = status==='done' ? 'Visa svar' : status==='started' ? 'Fortsätt' : 'Starta quiz';
+    const hasMem = catMemories[c.id].length > 0;
+    const memHtml = hasMem ? `<div class="mem-section"><div class="mem-toggle" onclick="toggleMem('${c.id}')"><span>Sparat minne</span><span id="mem-arrow-${c.id}">▾</span></div><div class="mem-content-box" id="mem-box-${c.id}">${catMemories[c.id].slice(0,300)}...</div><button class="mem-edit-btn" onclick="openEditMemory('${c.id}')">Redigera</button></div>` : '';
+    return `<div class="${cc}"><div class="cat-card-top"><span class="cat-icon">${c.icon}</span><div><div class="cat-name">${c.name}</div><div class="cat-status" style="color:${sc}">${sl}</div></div><div class="ring-wrap"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg" cx="22" cy="22" r="16"/><circle class="ring-fg" cx="22" cy="22" r="16" stroke="${rc}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="ring-pct">${Math.round(n)}%</div></div></div><button class="${bc}" onclick="startQuizFlow('${c.id}')">${bt}</button>${memHtml}</div>`;
+  }).join('');
 }
 
-// ── SCROLL HINT ───────────────────────────────────────────
+function toggleMem(id) {
+  const el = document.getElementById('mem-box-'+id), ar = document.getElementById('mem-arrow-'+id);
+  el.classList.toggle('open'); ar.textContent = el.classList.contains('open') ? '▴' : '▾';
+}
+
+function openEditMemory(id) {
+  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">Redigera minne – ${CATS.find(c=>c.id===id).name}</div><div class="modal-sub">Justera hur Claude sammanfattat dina svar.</div></div><div class="modal-body"><textarea class="write-area" id="mem-edit-area" style="min-height:200px;">${catMemories[id]}</textarea></div><div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">Avbryt</button><button class="btn-primary" onclick="saveEditedMem('${id}')">Spara</button></div>`);
+}
+
+function saveEditedMem(id) {
+  catMemories[id] = document.getElementById('mem-edit-area').value;
+  localStorage.setItem('bc3_mem_' + id, catMemories[id]);
+  closeModal();
+}
+
+function showModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('overlay').style.display = 'none';
+  quizState = null;
+  renderDashboard();
+}
+
+function startQuizFlow(catId) {
+  const cat = CATS.find(c => c.id === catId);
+  const n = getCount(catId), status = getStatus(catId);
+  if (status === 'done') { showDoneModal(catId, false); return; }
+  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">${cat.icon} ${cat.name}</div><div class="modal-sub">100 frågor för att klona din kommunikation. Ja/nej-frågor går automatiskt vidare. Stäng när du vill – progress sparas.</div></div><div class="modal-body"><div class="confirm-info"><div class="confirm-row"><span class="confirm-label">Besvarade</span><span class="confirm-val">${n} / 100</span></div><div class="confirm-row"><span class="confirm-label">Auto-advance vid ja/nej</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">Bakåtknapp</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">Kryss = paus & spara</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">AI-analys vid avslut</span><span class="confirm-val">✓ Claude analyserar</span></div></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">Avbryt</button><button class="btn-primary" onclick="startQuiz('${catId}')">${n > 0 ? 'Fortsätt' : 'Starta'}</button></div>`);
+}
+
+function startQuiz(catId) {
+  const qs = Q[catId];
+  let startIdx = 0;
+  for (let i = 0; i < qs.length; i++) {
+    if (!(i in catProgress[catId].answers)) { startIdx = i; break; }
+    if (i === qs.length - 1) startIdx = 0;
+  }
+  quizState = { catId, currentIdx: startIdx };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const { catId, currentIdx } = quizState;
+  const qs = Q[catId], cat = CATS.find(c => c.id === catId), q = qs[currentIdx];
+  const pct = Math.round(currentIdx / qs.length * 100);
+  const existing = catProgress[catId].answers[currentIdx];
+  const isLast = currentIdx === qs.length - 1;
+  let ansHtml = '';
+  if (q.t === 'yn') {
+    ansHtml = `<div class="advance-hint">Klicka ja eller nej för att gå automatiskt vidare</div><div class="yn-row"><button class="yn-btn yes${existing==='Ja'?' yes-sel':''}" id="yn-yes" onclick="selectYN('Ja')">✓ Ja</button><button class="yn-btn no${existing==='Nej'?' no-sel':''}" id="yn-no" onclick="selectYN('Nej')">✗ Nej</button></div>`;
+  } else {
+    ansHtml = `<textarea class="write-area" id="write-ans" placeholder="Skriv ditt svar här...">${existing||''}</textarea>`;
+  }
+  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">${cat.icon} ${cat.name}</div></div><div class="modal-body"><div class="q-progress"><div class="q-progress-top"><span>${currentIdx+1} / ${qs.length}</span><span>${pct}%</span></div><div class="q-track"><div class="q-fill" style="width:${pct}%"></div></div></div><div class="q-text">${q.q}</div>${ansHtml}</div><div class="modal-footer"><button class="btn-secondary" onclick="goBack()" ${currentIdx===0?'disabled':''}>← Tillbaka</button><button class="btn-primary" onclick="nextQuestion()">${isLast?'Avsluta':'Nästa →'}</button></div>`);
+}
+
+function selectYN(val) {
+  const { catId, currentIdx } = quizState;
+  catProgress[catId].answers[currentIdx] = val;
+  saveProgress(catId);
+  const yes = document.getElementById('yn-yes'), no = document.getElementById('yn-no');
+  if (yes && no) {
+    yes.className = 'yn-btn yes' + (val==='Ja' ? ' yes-sel' : '');
+    no.className = 'yn-btn no' + (val==='Nej' ? ' no-sel' : '');
+  }
+  setTimeout(() => {
+    const qs = Q[catId];
+    if (currentIdx >= qs.length - 1) { catProgress[catId].done = true; saveProgress(catId); generateMemory(catId); }
+    else { quizState.currentIdx = currentIdx + 1; renderQuestion(); }
+  }, 350);
+}
+
+function saveCurrentWrite() {
+  const { catId, currentIdx } = quizState;
+  if (Q[catId][currentIdx].t === 'write') {
+    const v = document.getElementById('write-ans')?.value?.trim() || '';
+    if (v) { catProgress[catId].answers[currentIdx] = v; saveProgress(catId); }
+  }
+}
+
+function nextQuestion() {
+  saveCurrentWrite();
+  const { catId, currentIdx } = quizState, qs = Q[catId];
+  if (currentIdx >= qs.length - 1) { catProgress[catId].done = true; saveProgress(catId); generateMemory(catId); return; }
+  quizState.currentIdx = currentIdx + 1;
+  renderQuestion();
+}
+
+function goBack() {
+  saveCurrentWrite();
+  if (quizState.currentIdx === 0) return;
+  quizState.currentIdx--;
+  renderQuestion();
+}
+
+async function generateMemory(catId) {
+  const cat = CATS.find(c => c.id === catId);
+  const answers = catProgress[catId].answers;
+  const qs = Q[catId];
+
+  // Bygg lista med frågor och svar
+  const questionsAndAnswers = [];
+  qs.forEach((q, i) => {
+    if (answers[i] !== undefined) {
+      questionsAndAnswers.push({ question: q.q, answer: answers[i] });
+    }
+  });
+
+  // Visa laddningsstate
+  showDoneModal(catId, true);
+
+  try {
+    const token = await getToken();
+    const res = await fetch(`${SUPA_URL}/functions/v1/summarize-quiz`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'apikey': SUPA_KEY
+      },
+      body: JSON.stringify({
+        user_id: getUserId(),
+        category_id: catId,
+        category_name: cat.name,
+        questions_and_answers: questionsAndAnswers
+      })
+    });
+
+    const data = await res.json();
+    if (data.summary) {
+      catMemories[catId] = data.summary;
+      localStorage.setItem('bc3_mem_' + catId, data.summary);
+    }
+  } catch(e) {
+    console.error('Fel vid sammanfattning:', e);
+    // Fallback: enkel sammanfattning om Edge Function misslyckas
+    const lines = [];
+    qs.forEach((q, i) => { if (answers[i]) lines.push(q.q + ': ' + answers[i]); });
+    catMemories[catId] = lines.slice(0, 10).join(' | ');
+    localStorage.setItem('bc3_mem_' + catId, catMemories[catId]);
+  }
+
+  showDoneModal(catId, false);
+}
+
+function showDoneModal(catId, loading) {
+  const cat = CATS.find(c => c.id === catId);
+  if (loading) {
+    showModal(`<div class="modal-body"><div class="done-wrap"><div class="loading-spinner"></div><div class="done-title">Claude analyserar dina svar...</div><div class="done-sub">Läser igenom alla dina svar och skapar en kommunikationsprofil. Det tar 10–20 sekunder.</div></div></div>`);
+  } else {
+    showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-body"><div class="done-wrap"><div class="done-icon">${cat.icon}</div><div class="done-title">${cat.name} – klar!</div><div class="done-sub">Claude har analyserat dina svar och skapat en kommunikationsprofil. Tryck på "Granska minne" för att se och redigera.</div><button class="btn-primary" style="width:100%;margin-bottom:8px" onclick="closeModal()">Tillbaka</button><button class="btn-secondary" style="width:100%" onclick="closeModal();setTimeout(()=>openEditMemory('${catId}'),100)">Granska minne</button></div></div>`);
+  }
+}
+
+// ── SCROLL ────────────────────────────────────────────────
 function updateScrollHint() {
   const sh = document.getElementById('scroll-hint');
-  const isLanding = document.getElementById('page-landing').classList.contains('active');
-  if (!isLanding) { sh.style.display = 'none'; return; }
+  if (!document.getElementById('page-landing').classList.contains('active')) { sh.style.display = 'none'; return; }
   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  if (scrollable <= 0 || window.scrollY >= scrollable - 40) { sh.style.display = 'none'; } else { sh.style.display = 'block'; }
+  sh.style.display = (scrollable > 0 && window.scrollY < scrollable - 40) ? 'block' : 'none';
 }
 window.addEventListener('scroll', updateScrollHint);
 
-// ── INIT ──────────────────────────────────────────────────
-initLang();
-initCategories();
+// ── BOOT ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => { init(); setTimeout(updateScrollHint, 100); });
 </script>
 </body>
