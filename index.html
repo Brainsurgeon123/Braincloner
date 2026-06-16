@@ -1596,7 +1596,7 @@ function renderQuestion() {
   } else {
     ansHtml = `<textarea class="write-area" id="write-ans" placeholder="Skriv ditt svar här...">${existing||''}</textarea>`;
   }
-  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">${cat.icon} ${cat.name}</div></div><div class="modal-body"><div class="q-progress"><div class="q-progress-top"><span>${currentIdx+1} / ${qs.length}</span><span>${pct}%</span></div><div class="q-track"><div class="q-fill" style="width:${pct}%"></div></div></div><div class="q-text">${q.q}</div>${ansHtml}</div><div class="modal-footer"><button class="btn-secondary" onclick="goBack()" ${currentIdx===0?'disabled':''}>← Tillbaka</button><button class="btn-primary" onclick="nextQuestion()">${isLast?'Avsluta':'Nästa →'}</button></div>`);
+  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">${cat.icon} ${cat.name}</div></div><div class="modal-body"><div class="q-progress"><div class="q-progress-top"><span>${currentIdx+1} / 100</span><span>${pct}%</span></div><div class="q-track"><div class="q-fill" style="width:${pct}%"></div></div></div><div class="q-text">${q.q}</div>${ansHtml}</div><div class="modal-footer"><button class="btn-secondary" onclick="goBack()" ${currentIdx===0?'disabled':''}>← Tillbaka</button><button class="btn-primary" onclick="nextQuestion()">${isLast?'Avsluta':'Nästa →'}</button></div>`);
 }
 
 function selectYN(val) {
