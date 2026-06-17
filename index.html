@@ -1568,9 +1568,9 @@ function closeModal() {
 
 function startQuizFlow(catId) {
   const cat = CATS.find(c => c.id === catId);
-  const n = getCount(catId), status = getStatus(catId);
+  const status = getStatus(catId);
   if (status === 'done') { showDoneModal(catId, false); return; }
-  showModal(`<button class="modal-close" onclick="closeModal()">✕</button><div class="modal-header"><div class="modal-title">${cat.icon} ${cat.name}</div><div class="modal-sub">100 frågor för att klona din kommunikation. Ja/nej-frågor går automatiskt vidare. Stäng när du vill – progress sparas.</div></div><div class="modal-body"><div class="confirm-info"><div class="confirm-row"><span class="confirm-label">Besvarade</span><span class="confirm-val">${n} / 100</span></div><div class="confirm-row"><span class="confirm-label">Auto-advance vid ja/nej</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">Bakåtknapp</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">Kryss = paus & spara</span><span class="confirm-val">✓</span></div><div class="confirm-row"><span class="confirm-label">AI-analys vid avslut</span><span class="confirm-val">✓ Claude analyserar</span></div></div></div><div class="modal-footer"><button class="btn-secondary" onclick="closeModal()">Avbryt</button><button class="btn-primary" onclick="startQuiz('${catId}')">${n > 0 ? 'Fortsätt' : 'Starta'}</button></div>`);
+  startQuiz(catId);
 }
 
 function startQuiz(catId) {
